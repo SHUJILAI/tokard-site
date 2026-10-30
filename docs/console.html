@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Wallet · Tokard</title>
+<meta name="description" content="Your Tokard cards: one key and one budget per card.">
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="theme-color" content="#F5F6F8">
+<link rel="icon" href="assets/brand/tokard-mark.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=Geist+Mono:wght@400;500;600;700&family=Hanken+Grotesk:wght@300..700&display=swap">
+<link rel="stylesheet" href="assets/site2.css">
+<link rel="stylesheet" href="assets/cards.css">
+<style>
+.w-head { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 24px; align-items: end; padding: clamp(40px, 6vw, 90px) 0 36px; }
+.w-head .display { font-size: clamp(56px, 7.6vw, 140px); margin-top: 16px; }
+.w-head .acts { display: flex; gap: 10px; flex-wrap: wrap; }
+.stats { display: grid; grid-template-columns: repeat(2, max-content); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+.stat { padding: 22px 72px 22px 0; display: flex; flex-direction: column; gap: 8px; }
+.stat + .stat { padding-left: 20px; border-left: 1px solid var(--line); }
+.stat b { font-size: clamp(30px, 3.2vw, 52px); font-weight: 300; letter-spacing: -0.045em; line-height: 1; font-variant-numeric: tabular-nums; }
+.stat .meta span { color: var(--ink); }
+@media (max-width: 760px) { .w-head { grid-template-columns: 1fr; } .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); } .stat { padding-right: 16px; } }
+
+.block { margin-top: 64px; }
+.gate { display: flex; flex-direction: column; align-items: center; gap: 28px; padding: 72px 0 40px; }
+.gate-backs { display: flex; gap: 14px; }
+.gate-backs i { width: 120px; height: 168px; border-radius: 12px; background: var(--mark-tile) 0 0 / 22px 22px, radial-gradient(130% 90% at 30% 0%, #4F68FF, #2340FF 42%, #1A2CC8); box-shadow: inset 0 1px 0 rgba(255,255,255,.3), 0 18px 30px -16px rgba(27,35,112,.5); position: relative; }
+.gate-backs i::after { content: ""; position: absolute; left: 50%; top: 50%; width: 22px; height: 30px; margin: -15px 0 0 -11px; background: url(assets/brand/tokard-mark-white.svg) center / contain no-repeat; image-rendering: pixelated; }
+.gate-backs i:nth-child(1) { transform: rotate(-6deg) translateY(8px); } .gate-backs i:nth-child(3) { transform: rotate(6deg) translateY(8px); }
+@media (max-width: 560px) { .gate-backs i { width: 88px; height: 123px; } }
+.block-h { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; margin-bottom: 26px; }
+.block-h h2 { font-size: clamp(26px, 2.2vw, 36px); font-weight: 500; letter-spacing: -0.03em; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 34px 26px; }
+.slot { display: flex; flex-direction: column; gap: 12px; align-items: flex-start; }
+.slot button.open { -webkit-appearance: none; appearance: none; border: 0; padding: 0; background: none; cursor: pointer; border-radius: 14px; position: relative; text-align: left; }
+.slot .cap { display: flex; justify-content: space-between; width: 230px; font-size: 13.5px; color: var(--ink-2); }
+.slot .cap b { color: var(--ink); font-weight: 500; }
+.badge { position: absolute; right: -8px; top: -8px; z-index: 3; font: 600 10.5px var(--f-mono); letter-spacing: .1em; text-transform: uppercase; padding: 5px 9px; border-radius: 999px; background: var(--warn); color: #1A1200; box-shadow: 0 8px 20px -8px rgba(240,180,41,.7); }
+.badge.frozen { background: var(--ink); color: #FFFFFF; box-shadow: none; }
+.slot.is-frozen .cmini { filter: grayscale(.85) brightness(.75); }
+.newcard { width: 230px; height: 322px; border-radius: 18px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; color: var(--ink-2); background: radial-gradient(circle at 1px 1px, #D3D8E2 1.2px, transparent 1.6px) 0 0 / 16px 16px; box-shadow: inset 0 0 0 1.5px var(--line-2); transition: color .25s, box-shadow .25s; }
+.newcard:hover { color: var(--ink); box-shadow: inset 0 0 0 1.5px var(--ink); }
+.newcard .plus { font-size: 40px; font-weight: 300; line-height: 1; }
+.offers { display: flex; gap: 22px; flex-wrap: wrap; }
+.offer-slot { display: flex; gap: 16px; align-items: center; padding: 14px 18px 14px 14px; border-radius: 20px; background: #FFFFFF; box-shadow: inset 0 0 0 1px var(--line); }
+.offer-slot p { font-size: 14px; color: var(--ink-2); }
+.offer-slot p b { color: var(--ink); font-weight: 500; }
+@media (max-width: 560px) { .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 26px 14px; } .slot, .slot button.open { width: 100%; min-width: 0; } .grid .cmini { max-width: 100%; overflow: hidden; border-radius: 12px; } .slot .cap { width: 100%; } .newcard { width: 100%; height: auto; aspect-ratio: 5 / 7; } }
+
+/* card detail */
+dialog.detail { border: 0; padding: 0; width: min(920px, calc(100% - 32px)); max-height: calc(100% - 48px); border-radius: 28px; color: var(--ink); background: #FFFFFF; box-shadow: 0 50px 120px -30px rgba(11,13,18,.45), inset 0 0 0 1px var(--line); }
+dialog.detail[open] { animation: csheet .5s var(--ease-reveal); }
+dialog.detail::backdrop { background: rgba(11,13,18,.28); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); }
+.detail .wrap { display: grid; grid-template-columns: 300px minmax(0, 1fr); gap: 36px; padding: 32px; }
+.detail .left { display: flex; flex-direction: column; align-items: center; gap: 14px; padding: 24px 0; border-radius: 20px; background: radial-gradient(circle at 1px 1px, #D6DBE5 1.1px, transparent 1.5px) 0 0 / 18px 18px, var(--bg); }
+.detail .right { display: flex; flex-direction: column; gap: 20px; min-width: 0; }
+.detail .x { position: absolute; right: 16px; top: 16px; width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; -webkit-appearance: none; appearance: none; border: 0; background: var(--bg-3); cursor: pointer; color: var(--ink); z-index: 2; }
+.detail .x:hover { background: var(--line); }
+.detail .lab { display: flex; flex-direction: column; gap: 6px; }
+.detail input.name { width: 100%; font-size: 28px; font-weight: 500; letter-spacing: -0.03em; background: none; border: 0; border-bottom: 1px solid var(--line-2); padding: 4px 0 8px; color: var(--ink); }
+.detail input.name:focus { outline: none; border-color: var(--accent); }
+.budget-big { display: flex; flex-direction: column; gap: 10px; }
+.budget-big .nums { display: flex; justify-content: space-between; align-items: baseline; }
+.budget-big .nums b { font-size: 40px; font-weight: 300; letter-spacing: -0.045em; line-height: 1; }
+.budget-big .track { display: grid; grid-template-columns: repeat(40, 1fr); gap: 2px; height: 10px; }
+.budget-big .track i { background: var(--line); }
+.budget-big .track i.on { background: var(--accent); }
+.spark { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; align-items: end; height: 70px; }
+.spark i { display: block; background: repeating-linear-gradient(0deg, rgba(35,64,255,.45) 0 6px, transparent 6px 8px); }
+.spark i:last-child { background: repeating-linear-gradient(0deg, var(--accent) 0 6px, transparent 6px 8px); }
+.spark-l { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; margin-top: 6px; font: 500 10px var(--f-mono); color: var(--ink-3); text-align: center; }
+.calls { list-style: none; margin: 0; padding: 0; }
+.calls li { display: flex; justify-content: space-between; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--line); font-size: 14px; color: var(--ink-2); }
+.calls li span:last-child { font-family: var(--f-mono); color: var(--ink); }
+.dacts { display: flex; gap: 8px; flex-wrap: wrap; }
+.danger { color: var(--bad) !important; }
+@media (max-width: 760px) {
+  dialog.detail { width: 100%; max-width: 100%; max-height: 92vh; margin: auto 0 0; border-radius: 26px 26px 0 0; }
+  .detail .wrap { grid-template-columns: 1fr; padding: 26px 20px 30px; gap: 22px; }
+}
+/* history */
+.hist { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--line); }
+.hist li { display: grid; grid-template-columns: 130px 64px minmax(0, 1fr) auto auto; gap: 20px; align-items: center; padding: 14px 0; border-bottom: 1px solid var(--line); }
+.hist .when { font: 500 12px var(--f-mono); color: var(--ink-3); letter-spacing: .04em; white-space: nowrap; }
+.hist .what b { display: block; font-weight: 500; }
+.hist .what span { font-size: 13.5px; color: var(--ink-3); }
+.hist .price { font-family: var(--f-mono); font-size: 15px; text-align: right; }
+.hist .price s { color: var(--ink-3); margin-right: 8px; }
+.hist .st { font: 600 12.5px var(--f-body); padding: 6px 10px; display: inline-flex; align-items: center; gap: 8px; min-width: 104px; justify-content: center; }
+.hist .st.claimed { background: #E3F6EC; color: #0C7A42; }
+.hist .st.open { background: var(--accent); color: #FFFFFF; }
+.hist .st.gone { background: var(--bg-3); color: var(--ink-3); }
+.hist .empty { display: block; padding: 28px 0; color: var(--ink-3); }
+@media (max-width: 700px) {
+  .hist li { grid-template-columns: 56px minmax(0, 1fr) auto; gap: 6px 14px; }
+  .hist .when { grid-column: 2 / -1; grid-row: 2; }
+  .hist .cm { grid-row: 1 / 3; }
+  .hist .price { grid-column: 3; grid-row: 1; }
+  .hist .stc { grid-column: 3; grid-row: 2; justify-self: end; }
+  .hist .st { min-width: 0; }
+}
+.conn { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 0 16px; margin: 0; }
+.conn dt, .conn dd { margin: 0; padding: 9px 0; border-bottom: 1px solid var(--line); font-size: 14px; }
+.conn dt { color: var(--ink-3); }
+.conn dd { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.conn code { font-family: var(--f-mono); font-size: 12.5px; color: var(--ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+.conn .cbtn { -webkit-appearance: none; appearance: none; border: 0; background: none; color: var(--ink-3); width: 28px; height: 28px; min-width: 28px; display: grid; place-items: center; border-radius: 8px; cursor: pointer; flex: none; }
+.conn .cbtn:hover { color: var(--ink); background: var(--bg-3); }
+.conn .cbtn .mi { width: 15px; height: 15px; }
+</style>
+</head>
+<body>
+<header class="topbar"><div class="container row">
+  <a class="brandmark" href="index.html" aria-label="Tokard home"><img src="assets/brand/tokard-mark.svg" alt=""><span>Tokard</span></a>
+  <nav class="toplinks" aria-label="Main">
+    <a data-page="shop" href="shop.html">Shop</a>
+    <a data-page="playground" href="playground.html">Playground</a>
+    <a data-page="studio" href="studio.html">Studio</a>
+    <a href="docs.html">Docs</a>
+  </nav>
+  <div class="topcta"><a class="vbtn primary sm" data-page="console" href="console.html">Wallet</a><button class="vbtn ghost sm menu-btn icon-btn" type="button" aria-expanded="false" aria-label="Menu"><svg class="mi" viewBox="0 0 24 24" aria-hidden="true"><path data-icon="menu" d="M4 7h16M4 12h16M4 17h16"/></svg></button></div>
+</div></header>
+
+<main class="container">
+  <section class="w-head">
+    <div>
+      <h1 class="display">Your cards.</h1>
+    </div>
+    <div class="acts"><a class="vbtn ghost" href="index.html" id="flipBtn">Flip today's cards</a><a class="vbtn accent" href="shop.html">Get a card</a></div>
+  </section>
+  <section class="gate" id="gate" hidden></section>
+  <div id="walletBody">
+  <section class="stats" aria-label="Summary" id="stats"></section>
+
+  <section class="block" id="offersBlock" hidden aria-labelledby="off-h">
+    <div class="block-h"><h2 id="off-h">Waiting for you</h2></div>
+    <div class="offers" id="offers"></div>
+  </section>
+
+  <section class="block" aria-labelledby="cards-h">
+    <div class="block-h"><h2 id="cards-h" class="sr">Cards</h2></div>
+    <div class="grid" id="grid"></div>
+  </section>
+
+  <section class="block" aria-labelledby="hist-h">
+    <div class="block-h"><h2 id="hist-h">Your flips</h2><a class="tlink" href="odds.html">Odds and rules</a></div>
+    <ul class="hist" id="hist"></ul>
+  </section>
+  </div>
+</main>
+
+<dialog class="detail" id="detail" aria-labelledby="dName"></dialog>
+
+<footer class="foot"><div class="container">
+  <div class="row">
+    <a class="brandmark" href="index.html"><img src="assets/brand/tokard-mark.svg" alt=""><span>Tokard</span></a>
+    <nav aria-label="Footer"><a href="shop.html">Shop</a><a href="playground.html">Playground</a><a href="studio.html">Studio</a><a href="docs.html">Docs</a><a href="odds.html">Odds and rules</a><button type="button" id="resetDemo" style="all:unset;cursor:pointer">Reset demo</button><button type="button" id="signOut" style="all:unset;cursor:pointer" hidden>Sign out</button></nav>
+  </div>
+  <small>Demo wallet with sample cards. On the live site, sign-in, keys, budgets and payments run on the gateway (New API, AGPL-3.0).</small>
+</div></footer>
+
+<script src="assets/morph.js"></script>
+<script src="assets/site.js"></script>
+<script src="assets/cards.js"></script>
+<script>
+(() => {
+  'use strict';
+  const C = window.Cards, CA = window.ChinaAPI, $ = (id) => document.getElementById(id), S = C.state, esc = C.esc;
+  const cardsOf = () => S.get().cards;
+  const rng = (seed) => { let h = 2166136261; for (const ch of seed) h = Math.imul(h ^ ch.charCodeAt(0), 16777619); return () => ((h = Math.imul(h ^ (h >>> 15), 2246822507) ^ Math.imul(h ^ (h >>> 13), 3266489909)) >>> 0) / 4294967296; };
+
+  function renderStats() {
+    const cs = cardsOf().filter((c) => !c.frozen);
+    const left = cs.reduce((s, c) => s + c.left, 0), spent = cardsOf().reduce((s, c) => s + (c.value - c.left), 0);
+    $('stats').innerHTML = `<div class="stat"><span class="meta">Credit left</span><b>${C.fmt(+left.toFixed(2))}</b></div>
+      <div class="stat"><span class="meta">Spent</span><b>${C.fmt(+spent.toFixed(2))}</b></div>`;
+    $('flipBtn').textContent = S.canFlip() ? "Flip today's cards" : 'New cards in ' + C.left(S.nextFlipAt());
+  }
+
+  function renderOffers() {
+    const offers = S.get().offers.filter((o) => S.isOpen(o));
+    $('offersBlock').hidden = !offers.length;
+    $('offers').innerHTML = offers.map((o) => `<div class="offer-slot">${C.mini(o, { width: 92, lift: false })}<div><p><b>${C.fmt(o.value)} ${C.KIND[o.kind].deck.toLowerCase()} card</b> for <b>${C.fmt(o.price)}</b></p><p class="meta" style="margin:6px 0 12px">Ends in <span class="num" data-left="${o.expires}">${C.left(o.expires)}</span></p><button class="vbtn ${o.tier === 'jackpot' ? 'gold' : 'primary'} sm" type="button" data-claim="${o.id}">Claim</button></div></div>`).join('');
+  }
+
+  function renderGrid() {
+    $('grid').innerHTML = cardsOf().map((c) => {
+      const low = c.left / c.value < 0.15;
+      return `<div class="slot${c.frozen ? ' is-frozen' : ''}${c.fresh ? ' fresh' : ''}">
+        <button class="open" type="button" data-open="${c.id}" aria-label="Open ${esc(c.label || C.KIND[c.kind].deck + ' card')}">${c.frozen ? '<span class="badge frozen">Frozen</span>' : low ? '<span class="badge">Low</span>' : ''}${C.mini({ kind: c.kind, value: c.value, off: c.off, tier: c.tier, price: c.paid, serial: c.serial }, { width: 230, label: c.label || 'Unnamed', budget: { left: c.left } })}</button>
+      </div>`;
+    }).join('') + `<div class="slot"><a class="newcard" href="shop.html"><span class="plus">+</span><span>New card</span></a></div>`;
+    cardsOf().forEach((c) => { delete c.fresh; }); S.save();
+    if (innerWidth <= 560) document.querySelectorAll('#grid .cmini').forEach((m) => { const w = Math.floor(m.closest('.slot').clientWidth) || 160; m.style.setProperty('--mw', w + 'px'); m.style.setProperty('--mw-n', w); });
+  }
+
+  // ----- detail -----
+  let openId = null, revealed = false;
+  function openDetail(id) {
+    const c = cardsOf().find((x) => x.id === id); if (!c) return;
+    openId = id; revealed = false;
+    const r = rng(c.id), days = Array.from({ length: 7 }, (_, i) => (c.value - c.left) * (0.05 + r() * 0.25) * (i === 6 ? 1.2 : 1));
+    const max = Math.max(...days, 0.01);
+    const dayNames = Array.from({ length: 7 }, (_, i) => new Date(Date.now() - (6 - i) * C.DAY).toLocaleDateString('en-US', { weekday: 'short' }).slice(0, 2));
+    const calls = c.kind === 'text' ? [['Chat completion · 1.8K in · 420 out', '$0.0011'], ['Chat completion · 640 in · 210 out', '$0.0004'], ['Chat completion · 12K in · 1.1K out', '$0.0049']]
+      : c.kind === 'image' ? [['Image · 2048 × 1152', '$0.045'], ['Image edit · 1536 × 1536', '$0.045'], ['Image · 1152 × 2048', '$0.045']]
+      : [['Video · 5 s · 720p · sound', '$1.15'], ['Video · 5 s · 720p', '$1.15'], ['Video · 10 s · 720p · sound', '$2.30']];
+    // the card's key is official: it is used at the provider's own address, with the provider's model ID
+    const CONN = { text: [['Base URL', 'https://api.deepseek.com'], ['Model ID', 'deepseek-flash']], image: [['Base URL', 'https://ark.ap-southeast.bytepluses.com/api/v3'], ['Model ID', 'seedream-5-0-pro-260628']], video: [['Base URL', 'https://ark.ap-southeast.bytepluses.com/api/v3'], ['Model ID', 'dreamina-seedance-2-5-260628']] };
+    const refill = C.shopPrice(c.kind, +(c.value - c.left).toFixed(2), c.value);  // refills cost the shop price of the card's size
+    $('detail').innerHTML = `<button class="x" type="button" id="dClose" aria-label="Close">✕</button><div class="wrap">
+      <div class="left">${C.mini({ kind: c.kind, value: c.value, off: c.off, tier: c.tier, price: c.paid, serial: c.serial }, { width: 280, label: c.label || 'Unnamed', budget: { left: c.left }, lift: false })}
+</div>
+      <div class="right">
+        <div class="lab"><label class="sr" for="dName">Card name</label><input class="name" id="dName" value="${esc(c.label || '')}" placeholder="Name this card" maxlength="28"></div>
+        <div><div class="keybox"><code id="dKey">${esc(c.key.slice(0, 7))}${'•'.repeat(22)}${esc(c.key.slice(-4))}</code><button class="vbtn ghost sm" type="button" id="dReveal">Reveal</button><button class="vbtn primary sm icon-btn" type="button" id="dCopy" aria-label="Copy key"><svg class="mi" viewBox="0 0 24 24" aria-hidden="true"><path data-icon="copy" d="M9 9h11v11H9zM15 5V4H4v11h1"/></svg></button></div></div>
+        <dl class="conn">${CONN[c.kind].map(([k, v]) => `<dt>${k}</dt><dd><code>${esc(v)}</code><button class="icon-btn cbtn" type="button" data-copy="${esc(v)}" aria-label="Copy ${k}"><svg class="mi" viewBox="0 0 24 24" aria-hidden="true"><path data-icon="copy" d="M9 9h11v11H9zM15 5V4H4v11h1"/></svg></button></dd>`).join('')}</dl>
+        <div><div class="spark" aria-label="Spend, last 7 days">${days.map((d) => `<i style="height:${Math.max(6, d / max * 100).toFixed(0)}%"></i>`).join('')}</div><div class="spark-l">${dayNames.map((d) => `<span>${d}</span>`).join('')}</div></div>
+        <div class="dacts">
+          <button class="vbtn primary sm" type="button" id="dRefill" ${refill <= 0 ? 'disabled' : ''}>${refill > 0 ? `Refill to ${C.fmt(c.value)} for ${C.fmt(refill)}` : 'Full'}</button>
+          <button class="vbtn ghost sm" type="button" id="dFreeze">${c.frozen ? 'Unfreeze' : 'Freeze key'}</button>
+          <a class="vbtn ghost sm" href="playground.html?model=${c.kind}">Try in Playground</a>
+          <button class="vbtn ghost sm danger" type="button" id="dDelete">Delete</button>
+        </div>
+      </div></div>`;
+    $('detail').showModal();
+    $('detail').querySelectorAll('[data-copy]').forEach((b) => b.addEventListener('click', () => CA.copy(b.dataset.copy, b)));
+    $('dClose').addEventListener('click', () => $('detail').close());
+    $('dName').addEventListener('change', (e) => { c.label = e.target.value.trim(); S.save(); renderGrid(); C.toast('Card renamed.'); });
+    $('dReveal').addEventListener('click', () => { revealed = !revealed; if (revealed) { C.decode($('dKey'), c.key, 700); CA.apiKey.set(c.key); } else $('dKey').textContent = c.key.slice(0, 7) + '•'.repeat(22) + c.key.slice(-4); $('dReveal').textContent = revealed ? 'Hide' : 'Reveal'; });
+    $('dCopy').addEventListener('click', () => { CA.copy(c.key, $('dCopy'), 'Copy key'); CA.apiKey.set(c.key); });
+    $('dFreeze').addEventListener('click', () => { c.frozen = !c.frozen; S.save(); renderAll(); openDetail(c.id); C.toast(c.frozen ? 'Key frozen. Calls with it stop until you unfreeze.' : 'Key active again.'); });
+    $('dRefill').addEventListener('click', () => {
+      const o = { id: 'refill', kind: c.kind, value: +(c.value - c.left).toFixed(2), off: C.offAt(c.kind, c.value), tier: C.offAt(c.kind, c.value) ? 'shop' : 'full', price: refill, serial: c.serial };
+      $('detail').close();
+      C.checkout(o, () => { c.left = c.value; S.save(); renderAll(); C.toast(`${esc(c.label || 'Card')} refilled to ${C.fmt(c.value)}.`); });
+    });
+    $('dDelete').addEventListener('click', (e) => {
+      const b = e.currentTarget;
+      if (b.dataset.confirm !== '1') { b.dataset.confirm = '1'; b.textContent = 'Delete for good?'; setTimeout(() => { b.dataset.confirm = ''; b.textContent = 'Delete'; }, 4000); return; }
+      S.get().cards = cardsOf().filter((x) => x.id !== c.id); S.save(); $('detail').close(); renderAll(); C.toast('Card deleted. Its key stopped working.');
+    });
+  }
+  $('detail').addEventListener('click', (e) => { if (e.target === $('detail')) $('detail').close(); });
+
+  document.addEventListener('click', (e) => {
+    const o = e.target.closest('[data-open]'); if (o) openDetail(o.dataset.open);
+    const cl = e.target.closest('[data-claim]');
+    if (cl) { const off = S.get().offers.find((x) => x.id === cl.dataset.claim); if (off) C.checkout(off, (p) => { const card = S.buy(p); renderAll(); C.deliver(card); }); }
+  });
+  $('resetDemo').addEventListener('click', () => { S.reset(); renderAll(); scrollTo({ top: 0 }); });
+
+  // the wallet is behind an email sign-in
+  // what you turned over: the last ten flips, claimed or not
+  const dateOf = (o) => new Date(o.expires - C.DAY).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + '  ' + new Date(o.expires - C.DAY).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
+  function renderHist() {
+    const offers = S.get().offers.filter((o) => o.status !== 'void').slice(0, 10);
+    if (!offers.length) { $('hist').innerHTML = '<li><span class="empty">No flips yet.</span></li>'; return; }
+    $('hist').innerHTML = offers.map((o) => {
+      const card = S.cardFor(o), open = !card && o.expires > Date.now();
+      const st = card ? '<span class="st claimed">Claimed</span>' : open ? `<span class="st open">Ends <span class="num" data-left="${o.expires}">${C.left(o.expires)}</span></span>` : '<span class="st gone">Expired</span>';
+      return `<li><span class="when">${dateOf(o)}</span><span class="cm">${C.mini(o, { width: 56, lift: false })}</span>
+        <span class="what"><b>${C.fmt(o.value)} ${C.KIND[o.kind].deck.toLowerCase()} card</b><span>${C.tierOf(o).name || 'Shop'}</span></span>
+        <span class="price">${o.off ? `<s>${C.fmt(o.value)}</s>` : ''}${C.fmt(o.price)}</span><span class="stc">${st}</span></li>`;
+    }).join('');
+  }
+  setInterval(() => document.querySelectorAll('#hist [data-left]').forEach((el) => { el.textContent = C.left(+el.dataset.left); }), 1000);
+
+  function renderAll() {
+    const u = C.auth.user();
+    $('gate').hidden = !!u; $('walletBody').hidden = !u; document.querySelector('.w-head .acts').hidden = !u;
+    $('signOut').hidden = !u; if (u) $('signOut').textContent = `Sign out ${u.email}`;
+    if (!u) {
+      $('gate').innerHTML = `<div class="gate-backs" aria-hidden="true"><i></i><i></i><i></i></div><button class="vbtn primary" type="button" id="gateBtn">Sign in</button>`;
+      $('gateBtn').addEventListener('click', () => C.signIn(renderAll));
+      if (!renderAll.asked) { renderAll.asked = true; setTimeout(() => C.signIn(renderAll), 350); }
+      return;
+    }
+    renderStats(); renderOffers(); renderGrid(); renderHist();
+  }
+  $('signOut').addEventListener('click', () => { C.auth.signOut(); renderAll(); scrollTo({ top: 0 }); });
+  setInterval(() => { document.querySelectorAll('[data-left]').forEach((el) => { el.textContent = C.left(+el.dataset.left); }); if (!S.canFlip()) $('flipBtn').textContent = 'New cards in ' + C.left(S.nextFlipAt()); }, 1000);
+  let lastW = innerWidth;
+  addEventListener('resize', () => { if (innerWidth === lastW) return; lastW = innerWidth; if (innerWidth <= 560) renderGrid(); });
+  renderAll();
+})();
+</script>
+</body>
+</html>

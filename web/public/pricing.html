@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Pricing · ChinaAPI</title>
+<meta name="description" content="One price per model: text by the token, images by the image, video by the second. Same price all day.">
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="icon" href="assets/brand/chinaapi-mark.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800&family=Geist+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="assets/site.css">
+<style>
+.prices { overflow-x: auto; background: var(--panel); border: 1.5px solid var(--ink); box-shadow: 10px 10px 0 var(--accent); }
+.prices table { width: 100%; min-width: 760px; border-collapse: collapse; font-size: 15px; }
+.prices caption { caption-side: bottom; text-align: left; padding: 14px 22px; font-size: 13px; color: var(--muted); border-top: 1px solid var(--line-2); }
+.prices thead th { background: var(--code-bg); color: #FFFFFF; text-align: left; padding: 16px 22px; font-weight: 500; font-size: 13px; letter-spacing: .06em; text-transform: uppercase; }
+.prices th[scope=row] { text-align: left; padding: 22px; font-size: 20px; font-weight: 700; }
+.prices td { padding: 22px; color: var(--ink-2); }
+.prices tbody tr + tr > * { border-top: 1px solid var(--line-2); }
+.prices td.p { text-align: right; font-family: var(--f-mono); font-size: 18px; color: var(--ink); white-space: nowrap; }
+.prices .who { display: flex; align-items: center; gap: 12px; }
+.prices .who img { width: 28px; height: 28px; object-fit: contain; border-radius: 6px; }
+
+.est { margin-top: 56px; background: var(--panel); border: 1px solid var(--line); padding: 28px; display: flex; flex-wrap: wrap; gap: 32px; align-items: center; }
+.est > .l { flex: 1 1 420px; min-width: 0; display: flex; flex-direction: column; gap: 18px; }
+.est h2 { font-weight: 700; font-size: 30px; letter-spacing: -0.03em; }
+.est input[type=range] { width: 100%; min-height: 32px; accent-color: var(--accent); }
+.est .out { flex: 0 1 300px; min-width: 0; background: var(--code-bg); color: #FFFFFF; padding: 26px; display: flex; flex-direction: column; gap: 6px; }
+.est .out .k { font-family: var(--f-mono); font-size: 12.5px; letter-spacing: .1em; text-transform: uppercase; color: #A3AABA; }
+.est .out b { font-size: 56px; letter-spacing: -0.035em; line-height: 1; }
+.est .out span:last-child { font-size: 14px; color: #C9CEDA; }
+
+h2.big { font-weight: 700; font-size: clamp(32px, 4vw, 48px); letter-spacing: -0.035em; line-height: 1.05; }
+.plans { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
+.plan { background: var(--panel); border: 1px solid var(--line); padding: 28px; display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+.plan.featured { border: 2px solid var(--accent); }
+.plan h3 { font-size: 18px; }
+.plan .amt { display: flex; align-items: baseline; gap: 6px; }
+.plan .amt b { font-size: 48px; letter-spacing: -0.035em; line-height: 1; }
+.plan .amt span { color: var(--muted); }
+.plan ul { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 10px; font-size: 15px; color: var(--ink-2); flex-grow: 1; }
+
+.faq { border-top: 1.5px solid var(--ink); }
+.faq details { border-bottom: 1px solid var(--line); padding: 18px 0; }
+.faq summary { font-size: 18px; font-weight: 600; min-height: 28px; cursor: pointer; }
+.faq details p { margin: 12px 0 0; font-size: 15.5px; line-height: 1.6; color: var(--ink-2); max-width: 44em; }
+section.gap { margin-top: 72px; display: flex; flex-direction: column; gap: 24px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="nav">
+  <a class="logo" href="index.html" aria-label="ChinaAPI home"><img src="assets/brand/chinaapi-mark.svg" alt=""><span style="color:inherit">China<span>API</span></span></a>
+  <nav class="links" aria-label="Main">
+    <a class="hide-sm" href="index.html#models">Models</a>
+    <a data-page="pricing" href="pricing.html">Pricing</a>
+    <a data-page="playground" href="playground.html">Playground</a>
+    <a data-page="studio" href="studio.html">Studio</a>
+    <a class="hide-sm" href="index.html#docs">Docs</a>
+    <a class="btn primary js-account" data-page="console" href="console.html">Get API key</a>
+  </nav>
+</header>
+
+<div class="page-head">
+  <h1>One price per model.</h1>
+  <p>Text by the token, images by the image, video by the second. Same price all day.</p>
+</div>
+
+<div class="prices">
+  <table>
+    <caption>US dollars. Cached text input ($0.006 per 1M tokens) applies automatically when you resend the same prompt prefix.</caption>
+    <thead><tr><th scope="col">Model</th><th scope="col">Runs on</th><th scope="col" style="text-align:right">Price</th><th scope="col">Billed per</th></tr></thead>
+    <tbody>
+      <tr><th scope="row">Text</th><td><span class="who"><img src="assets/brand/deepseek.svg" alt="">DeepSeek V4.1 Flash</span></td><td class="p">$0.30 in · $1.20 out</td><td>1M tokens</td></tr>
+      <tr><th scope="row">Image</th><td><span class="who"><img src="assets/brand/dreamina.png" alt="">Seedream 5.0 Pro</span></td><td class="p">$0.045</td><td>Image, up to 2K</td></tr>
+      <tr><th scope="row">Video</th><td><span class="who"><img src="assets/brand/seed.png" alt="">Seedance 2.5</span></td><td class="p">$0.23</td><td>Second of 720p video, sound included</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<section class="est" aria-labelledby="est-h">
+  <div class="l">
+    <h2 id="est-h">Estimate your month</h2>
+    <div class="tabs" role="tablist" aria-label="Model" id="estTabs">
+      <button type="button" role="tab" aria-selected="true" data-job="text">Text</button>
+      <button type="button" role="tab" aria-selected="false" data-job="image">Image</button>
+      <button type="button" role="tab" aria-selected="false" data-job="video">Video</button>
+    </div>
+    <label for="estRange" style="font-size:15px;color:var(--ink-2)">Monthly volume: <strong class="num" style="color:var(--ink)" id="estVol"></strong></label>
+    <input id="estRange" type="range" min="0" step="1">
+    <p class="hint" id="estNote"></p>
+  </div>
+  <div class="out" aria-live="polite">
+    <span class="k">About</span>
+    <b id="estOut">$0</b>
+    <span>per month, before your free credit</span>
+  </div>
+</section>
+
+<section class="gap" id="plans" aria-labelledby="plans-h">
+  <h2 class="big" id="plans-h">Or pay one flat price</h2>
+  <div class="plans">
+    <article class="plan">
+      <h3>Pay as you go</h3>
+      <p class="amt"><b>$0</b><span>/ month</span></p>
+      <ul><li>$5 free credit to start</li><li>Pay the prices above</li><li>Text, image and video</li><li>Community support</li></ul>
+      <a class="btn" href="console.html">Get API key</a>
+    </article>
+    <article class="plan featured">
+      <h3>Starter</h3>
+      <p class="amt"><b>$20</b><span>/ month</span></p>
+      <ul><li>Monthly usage allowance, any model</li><li>Usage shown in tokens, images and seconds</li><li>Claude Code and Cursor presets</li><li>Email support</li></ul>
+      <a class="btn primary" href="console.html#plans">Start Starter</a>
+    </article>
+    <article class="plan">
+      <h3>Pro</h3>
+      <p class="amt"><b>$100</b><span>/ month</span></p>
+      <ul><li>Larger monthly allowance, any model</li><li>Priority routing at busy hours</li><li>Higher rate limits</li><li>Invoice billing</li></ul>
+      <a class="btn" href="console.html#plans">Start Pro</a>
+    </article>
+  </div>
+</section>
+
+<section class="gap" aria-labelledby="faq-h">
+  <h2 class="big" id="faq-h">Questions</h2>
+  <div class="faq">
+    <details><summary>Which models are behind text, image and video?</summary><p>DeepSeek V4.1 Flash for text, Seedream 5.0 Pro (the model behind Dreamina) for images, and Seedance 2.5 for video. Always the newest version of each.</p></details>
+    <details><summary>What happens when a newer version ships?</summary><p>We test it, then move the model name to it. Your code keeps working. If you need a fixed version, pin it, for example <code class="mono">text@2026-10</code>.</p></details>
+    <details><summary>Where is my data processed?</summary><p>Outside China. Prompts and outputs are not stored or used for training.</p></details>
+    <details><summary>Do I need a new SDK?</summary><p>No. Keep the OpenAI SDK you already use and change the base URL. For Claude Code, Cursor and Cline, set the base URL and key, and use text as the model name.</p></details>
+    <details><summary>How do I pay?</summary><p>Add funds by card in the console, or redeem a code. Plans renew monthly and their allowance is used before your balance.</p></details>
+  </div>
+</section>
+
+<footer class="site">
+  <div><span style="display:inline-flex;align-items:center;gap:8px"><img src="assets/brand/chinaapi-mark.svg" alt="" width="16" height="16" style="image-rendering:pixelated">© 2026 ChinaAPI</span>
+  <small>DeepSeek, Dreamina, Seedream, Seedance and ByteDance Seed are trademarks of their respective owners.</small></div>
+  <nav aria-label="Footer"><a href="playground.html">Playground</a><a href="studio.html">Studio</a><a href="console.html">Console</a><a href="index.html#docs">Docs</a></nav>
+</footer>
+
+</div>
+<script src="assets/site.js"></script>
+<script>
+(() => {
+  const steps = { text: [1, 5, 10, 25, 50, 100, 250, 500, 1000], image: [10, 50, 100, 500, 1000, 5000, 10000], video: [30, 60, 300, 600, 1800, 3600, 7200] };
+  const start = { text: 3, image: 3, video: 2 };
+  const P = window.ChinaAPI.PRICES;
+  let job = 'text';
+  const range = document.getElementById('estRange');
+  function render() {
+    const list = steps[job];
+    const v = list[Math.min(+range.value, list.length - 1)];
+    let cost, vol, note;
+    if (job === 'video') { cost = v * P.videoSecond; vol = v >= 60 ? (v / 60).toLocaleString('en-US') + ' min of video' : v + ' s of video'; note = '720p with sound.'; }
+    else if (job === 'image') { cost = v * P.image; vol = v.toLocaleString('en-US') + ' images'; note = 'Up to 2K per image.'; }
+    else { cost = v * (0.75 * P.textIn + 0.25 * P.textOut); vol = v >= 1000 ? '1B tokens' : v + 'M tokens'; note = 'Assumes 3 input tokens for every output token, with no cache hits. Cache hits make it cheaper.'; }
+    document.getElementById('estVol').textContent = vol;
+    document.getElementById('estNote').textContent = note;
+    document.getElementById('estOut').textContent = cost < 10 ? '$' + cost.toFixed(2) : '$' + Math.round(cost).toLocaleString('en-US');
+  }
+  function pick(j) {
+    job = j;
+    range.max = steps[j].length - 1;
+    range.value = start[j];
+    document.querySelectorAll('#estTabs [role=tab]').forEach((b) => b.setAttribute('aria-selected', b.dataset.job === j ? 'true' : 'false'));
+    render();
+  }
+  document.querySelectorAll('#estTabs [role=tab]').forEach((b) => b.addEventListener('click', () => pick(b.dataset.job)));
+  range.addEventListener('input', render);
+  pick('text');
+})();
+</script>
+</body>
+</html>

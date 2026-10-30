@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Odds and rules · Tokard</title>
+<meta name="description" content="Every chance and every price in a Tokard flip, printed. The same table for everyone, every day, and every rule.">
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="theme-color" content="#F5F6F8">
+<link rel="icon" href="assets/brand/tokard-mark.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=Geist+Mono:wght@400;500;600;700&family=Hanken+Grotesk:wght@300..700&display=swap">
+<link rel="stylesheet" href="assets/site2.css">
+<link rel="stylesheet" href="assets/cards.css">
+<style>
+.odds-head { padding-top: clamp(48px, 7vw, 104px); }
+.odds-head .lead { margin-top: 26px; }
+.hero h1 { font-size: clamp(54px, 7vw, 128px); }
+
+/* how it works */
+.steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-top: 1px solid var(--ink); }
+.step { padding: 26px 28px 0 0; display: flex; flex-direction: column; gap: 14px; }
+.step + .step { padding-left: 28px; border-left: 1px solid var(--line); }
+.step .n { font: 500 var(--fs-meta) var(--f-mono); letter-spacing: .14em; color: var(--accent); }
+.step h3 { font-size: clamp(30px, 2.6vw, 44px); font-weight: 500; letter-spacing: -0.04em; line-height: 1; }
+.step p { color: var(--ink-2); max-width: 26em; }
+.step .ill { height: 120px; display: flex; align-items: flex-end; gap: 8px; margin-bottom: 6px; }
+.ill .bk { width: 56px; height: 78px; border-radius: 6px; background: var(--mark-tile) 0 0 / 14px 14px, radial-gradient(130% 90% at 30% 0%, #4F68FF, #2340FF 42%, #1A2CC8); box-shadow: inset 0 1px 0 rgba(255,255,255,.3), 0 10px 20px -12px rgba(27,35,112,.5); position: relative; }
+.ill .bk::after { content: ""; position: absolute; left: 50%; top: 50%; width: 11px; height: 15px; margin: -7.5px 0 0 -5.5px; background: url(assets/brand/tokard-mark-white.svg) center / contain no-repeat; image-rendering: pixelated; }
+.ill .bk.up { transform: translateY(-14px) rotate(-3deg); background: #FFFFFF; box-shadow: inset 0 0 0 2px var(--accent), 0 16px 24px -14px rgba(35,64,255,.5); }
+.ill .bk.up::after { background-image: url(assets/brand/tokard-mark.svg); }
+.ill .tag { font: 600 18px var(--f-mono); padding: 12px 16px; background: var(--accent); color: #FFFFFF; align-self: center; letter-spacing: .02em; box-shadow: 0 14px 24px -14px rgba(35,64,255,.6); }
+.ill .tag s { opacity: .7; margin-right: 6px; }
+@media (max-width: 860px) { .steps { grid-template-columns: 1fr; } .step + .step { padding-left: 0; border-left: 0; border-top: 1px solid var(--line); margin-top: 26px; } .step { padding-bottom: 6px; } }
+
+/* odds */
+.odds-grid { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: 48px; align-items: start; }
+.otable { width: 100%; border-collapse: collapse; font-size: 15px; }
+.otable th, .otable td { text-align: left; padding: 16px 10px 16px 0; border-bottom: 1px solid var(--line); vertical-align: middle; white-space: nowrap; }
+.otable thead th { font: 500 var(--fs-meta) var(--f-mono); letter-spacing: .14em; text-transform: uppercase; color: var(--ink-3); padding-top: 0; }
+.otable td.num, .otable th.num { text-align: right; font-family: var(--f-mono); }
+.otable .tier { display: inline-flex; align-items: center; gap: 10px; font-weight: 500; }
+.otable .tier i { width: 10px; height: 10px; background: var(--c); }
+.otable .bar { width: 100%; padding-left: 18px; }
+.otable .bar span { display: flex; gap: 1px; }
+.otable .bar span i { flex: 0 0 3px; height: 12px; background: var(--c); }
+.otable tr[data-k="nice"] .bar span i, .otable tr[data-k="good"] .bar span i { background: #C3CAD8; }
+.otable .shoprow td { color: var(--ink-2); }
+.otable tfoot td { border-bottom: 0; color: var(--ink-2); font-size: 14px; padding-top: 18px; white-space: normal; }
+.otable tfoot b { color: var(--ink); font-weight: 600; }
+.side { display: flex; flex-direction: column; gap: 28px; }
+.mtable { width: 100%; border-collapse: collapse; font-size: 15px; }
+.mtable caption { text-align: left; padding-bottom: 10px; }
+.mtable td { padding: 12px 0; border-bottom: 1px solid var(--line); }
+.mtable td:last-child { text-align: right; font-family: var(--f-mono); }
+.mtable td .m { display: inline-flex; align-items: center; gap: 10px; }
+.mtable td .m img { width: 22px; height: 22px; object-fit: contain; border-radius: 6px; background: #FFFFFF; box-shadow: inset 0 0 0 1px var(--line); padding: 2px; }
+.jp { padding: 20px; }
+.jp .pxpips { margin-top: 14px; }
+.jp .pxpips i.on { background: #F2B51C; }
+.ultp { padding: 20px; margin-top: 12px; background: linear-gradient(135deg, #FFFDF5, #FFF4FB 60%, #F2FCFF); }
+.ultp .ubar { display: grid; grid-template-columns: repeat(20, minmax(0, 1fr)); gap: 3px; margin: 14px 0 10px; }
+.ultp .ubar i { height: 12px; background: var(--line-2); }
+.ultp .ubar i.on { background: linear-gradient(180deg, #FFE08A, #F2B51C); }
+.ultp .tlink { display: inline-block; margin-top: 12px; font-size: 14px; }
+.ultp .ubar i.edge { background: linear-gradient(180deg, #FF9BD8, #9A7BFF); }
+.tablewrap { overflow-x: auto; }
+@media (max-width: 1000px) { .odds-grid { grid-template-columns: 1fr; } .otable .bar { display: none; } }
+
+
+/* fine print */
+.print { columns: 2; column-gap: 48px; margin: 0; padding: 0; list-style: none; counter-reset: r; }
+.print li { break-inside: avoid; display: grid; grid-template-columns: 40px minmax(0, 1fr); padding: 16px 0; border-top: 1px solid var(--line); color: var(--ink-2); }
+.print li::before { counter-increment: r; content: counter(r, decimal-leading-zero); font: 500 12px var(--f-mono); color: var(--ink-3); padding-top: 4px; }
+.print b { color: var(--ink); font-weight: 500; }
+@media (max-width: 860px) { .print { columns: 1; } }
+</style>
+</head>
+<body>
+<header class="topbar"><div class="container row">
+  <a class="brandmark" href="index.html" aria-label="Tokard home"><img src="assets/brand/tokard-mark.svg" alt=""><span>Tokard</span></a>
+  <nav class="toplinks" aria-label="Main">
+        <a data-page="shop" href="shop.html">Shop</a>
+    <a data-page="playground" href="playground.html">Playground</a>
+    <a data-page="studio" href="studio.html">Studio</a>
+    <a href="docs.html">Docs</a>
+  </nav>
+  <div class="topcta"><a class="vbtn primary sm" data-page="console" href="console.html">Wallet</a><button class="vbtn ghost sm menu-btn icon-btn" type="button" aria-expanded="false" aria-label="Menu"><svg class="mi" viewBox="0 0 24 24" aria-hidden="true"><path data-icon="menu" d="M4 7h16M4 12h16M4 17h16"/></svg></button></div>
+</div></header>
+
+<main>
+<section class="section odds-head" aria-labelledby="hero-h">
+  <div class="container">
+    <h1 class="display" id="hero-h">Even the odds<br>are printed.</h1>
+    <p class="lead">Every flip is drawn from this table: the same for everyone, every day. Here is all of it, and every rule.</p>
+  </div>
+</section>
+
+<section class="section" aria-labelledby="how-h">
+  <div class="container">
+    <div class="section-head">
+      <h2 class="h2 rv" id="how-h">A coupon you<br>turn over.</h2>
+    </div>
+    <div class="steps">
+      <div class="step rv"><div class="ill" aria-hidden="true"><span class="bk"></span><span class="bk"></span><span class="bk"></span></div><h3>Flip</h3><p>A coding, a design and a film card, face down, every day. No purchase, no paid re-rolls.</p></div>
+      <div class="step rv" style="--d:1"><div class="ill" aria-hidden="true"><span class="bk"></span><span class="bk up"></span><span class="bk"></span></div><h3>See</h3><p>Each card turns over to show its face value, its discount and the price you'd pay.</p></div>
+      <div class="step rv" style="--d:2"><div class="ill" aria-hidden="true"><span class="tag"><s>$100</s>$80</span></div><h3>Decide</h3><p>Claim any of them within 24 hours and it lands in your wallet with its own key. Skip the rest; nothing is charged.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="odds" aria-labelledby="odds-h">
+  <div class="container">
+    <div class="section-head">
+      <h2 class="h2 rv" id="odds-h">Every chance,<br>every price.</h2>
+      <p class="lead rv" style="--d:1">Every flip is drawn from these tables and nothing else.</p>
+    </div>
+    <div class="odds-grid">
+      <div class="tablewrap rv">
+        <table class="otable">
+          <thead><tr><th>A $100 card</th><th class="num">Chance</th><th class="bar"><span class="sr">Chance, as blocks</span></th><th class="num">Coding</th><th class="num">Design</th><th class="num">Film</th></tr></thead>
+          <tbody id="oddsBody"></tbody>
+          <tfoot><tr><td colspan="6" id="oddsFoot"></td></tr></tfoot>
+        </table>
+      </div>
+      <div class="side rv" style="--d:1">
+        <table class="mtable"><caption class="meta">Face value</caption><tbody id="valueOdds"></tbody></table>
+        <div class="panel jp"><p class="h3"><span class="num" id="jpLeft">14</span> of 20 jackpots left today</p><div class="pxpips" id="pips" aria-hidden="true"></div></div>
+        <div class="panel ultp"><p class="h3"><span class="num" id="ultIn">–</span> cards to the next Ultimate</p><div class="ubar" id="ubar" aria-hidden="true"></div><p class="meta">One $100 card for $0.10 in every 10,000 sold</p><a class="tlink" href="index.html#ultimate">See the reveal →</a></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" aria-labelledby="print-h">
+  <div class="container">
+    <div class="section-head">
+      <h2 class="h2 rv" id="print-h">The rules.</h2>
+    </div>
+    <ol class="print rv">
+      <li><span><b>Flipping is free.</b> There is no way to pay for a flip, a re-roll or better odds.</span></li>
+      <li><span><b>Three cards per account each day,</b> one per deck. New cards at 00:00 UTC; each offer stays open for 24 hours.</span></li>
+      <li><span><b>You see the price first.</b> Checkout always shows the same card and price the flip showed.</span></li>
+      <li><span><b>20 jackpots a day, sitewide.</b> Once they are gone, a jackpot draw becomes a Rare card.</span></li>
+      <li><span><b>Gold within five flips.</b> A gold card costs less than 75% of its face value. If four flips in a row miss gold, the fifth is a Lucky card at 70% of face value. Daily flips and invite flips both count, and the count carries over from day to day.</span></li>
+      <li><span><b>One Ultimate for every 10,000 cards sold:</b> a $100 card for $0.10, turned over like any other card. To claim it, an account needs $20 of purchases; unclaimed after 24 hours, it goes back into the draw. One per account every 30 days.</span></li>
+      <li><span><b>Invite a friend, flip again.</b> When someone you invite signs up and flips their first card, you get one extra flip: up to 3 a day, 10 held. Invites from your own devices or accounts don't count.</span></li>
+      <li><span><b>Every card is also sold at a fixed price</b> in the <a class="tlink" href="shop.html">shop</a>, any day.</span></li>
+      <li><span><b>Card credit never expires</b> and has no cash value.</span></li>
+    </ol>
+  </div>
+</section>
+</main>
+
+<footer class="foot"><div class="container">
+  <div class="row">
+    <a class="brandmark" href="index.html"><img src="assets/brand/tokard-mark.svg" alt=""><span>Tokard</span></a>
+    <nav aria-label="Footer"><a href="shop.html">Shop</a><a href="console.html">Wallet</a><a href="playground.html">Playground</a><a href="studio.html">Studio</a><a href="docs.html">Docs</a><a href="odds.html">Odds and rules</a></nav>
+  </div>
+  <small>© 2026 Tokard. DeepSeek, Dreamina, Seedream, Seedance and ByteDance Seed are trademarks of their respective owners. Every call behind a Tokard card runs on original official API keys from DeepSeek and BytePlus. Demo: no real payment.</small>
+</div></footer>
+
+<script src="assets/morph.js"></script>
+<script src="assets/site.js"></script>
+<script src="assets/cards.js"></script>
+<script>
+(() => {
+  'use strict';
+  const C = window.Cards, CA = window.ChinaAPI, S = C.state, $ = (id) => document.getElementById(id);
+
+  // ----- odds -----
+  const TW = C.TIERS.filter((t) => t.w), tw = TW.reduce((s, t) => s + t.w, 0);
+  // what a $100 card costs in the shop, and after each kind of flip
+  const D = C.DECKS, P = (k, t) => (t ? C.flipPrice(k, 100, t) : C.shopPrice(k, 100));
+  $('oddsBody').innerHTML = `<tr class="shoprow"><td><span class="tier"><i style="background:var(--ink)"></i>Shop</span></td><td class="num">—</td><td class="bar"></td>${D.map((k) => `<td class="num">${C.fmt(P(k))}</td>`).join('')}</tr>`
+    + TW.map((t) => {
+      const p = t.w / tw * 100;
+      return `<tr data-k="${t.key}" style="--c:${t.color}"><td><span class="tier"><i></i>${t.name}</span></td><td class="num">${p.toFixed(0)}%</td><td class="bar"><span>${'<i></i>'.repeat(Math.round(p))}</span></td>${D.map((k) => `<td class="num">${C.fmt(P(k, t))}</td>`).join('')}</tr>`;
+    }).join('')
+    + `<tr data-k="lucky" style="--c:#F2B51C"><td><span class="tier"><i></i>Lucky</span></td><td class="num">—</td><td class="bar"><span class="meta">The fifth flip without gold</span></td>${D.map((k) => `<td class="num">${C.fmt(P(k, C.TIERS.find((t) => t.lucky)))}</td>`).join('')}</tr>`;
+  $('oddsFoot').innerHTML = `Every flip beats the shop price. Once the day's 20 jackpots are gone, a jackpot draw becomes Rare. Four flips in a row without gold make the fifth a Lucky card.`;
+  const pct = (rows) => { const w = rows.reduce((s, r) => s + r[1], 0); return (n) => Math.round(n / w * 100) + '%'; };
+  const kp = pct(C.KINDS), vp = pct(C.VALUES);
+  $('valueOdds').innerHTML = C.VALUES.map(([v, w]) => `<tr><td>${C.fmt(v)} card</td><td>${vp(w)}</td></tr>`).join('');
+  $('pips').innerHTML = '<i></i>'.repeat(C.JACKPOTS_PER_DAY);
+  $('ubar').innerHTML = '<i></i>'.repeat(20);
+
+  // ----- clock -----
+  function tick() {
+    const st = S.get();
+    $('jpLeft').textContent = Math.max(0, st.jackpotsLeft);
+    document.querySelectorAll('#pips i').forEach((p, i) => p.classList.toggle('on', i < st.jackpotsLeft));
+    const uin = S.nextUltimateIn(), done = Math.floor((C.ULTIMATE.every - uin) / C.ULTIMATE.every * 20);
+    $('ultIn').textContent = uin.toLocaleString('en-US');
+    document.querySelectorAll('#ubar i').forEach((p, i) => { p.classList.toggle('on', i < done); p.classList.toggle('edge', i === done); });
+    document.querySelectorAll('[data-left]').forEach((el) => { el.textContent = C.left(+el.dataset.left); });
+  }
+  setInterval(tick, 1000);
+
+  tick();
+})();
+</script>
+</body>
+</html>

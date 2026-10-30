@@ -1,0 +1,840 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ChinaAPI Studio</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="icon" href="assets/brand/chinaapi-mark.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: chat app; sidebar of conversations on the left, thread and composer on the right. One accent (cobalt); pixel art only in the brand mark. */
+:root {
+  --bg: #F4F5F7; --panel: #FFFFFF; --panel-2: #EEF0F3; --ink: #0B0D12; --ink-2: #3F4654; --muted: #5F6675;
+  --line: #DDE1E7; --accent: #2340FF; --accent-ink: #1A33D6; --accent-wash: #EEF1FF; --on-accent: #FFFFFF;
+  --user-bg: #0B0D12; --user-ink: #FFFFFF; --code-bg: #0B0D12; --code-ink: #E8EBF2;
+  --danger: #B42318; --danger-wash: #FDECEA; --ok: #0F7B45; --shadow: 0 1px 2px rgba(11,13,18,.06), 0 8px 24px rgba(11,13,18,.06);
+  --f-body: 'Geist', system-ui, -apple-system, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  --f-mono: 'Geist Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0C0E13; --panel: #14171E; --panel-2: #1B1F28; --ink: #ECEEF2; --ink-2: #B7BDC9; --muted: #8C93A3;
+    --line: #262B36; --accent: #5B73FF; --accent-ink: #9AA8FF; --accent-wash: #1A2045; --on-accent: #FFFFFF;
+    --user-bg: #ECEEF2; --user-ink: #0B0D12; --code-bg: #07080B; --code-ink: #E8EBF2;
+    --danger: #F2867A; --danger-wash: #3A1C19; --ok: #5CCB92; --shadow: 0 1px 2px rgba(0,0,0,.4), 0 8px 24px rgba(0,0,0,.3);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0C0E13; --panel: #14171E; --panel-2: #1B1F28; --ink: #ECEEF2; --ink-2: #B7BDC9; --muted: #8C93A3;
+  --line: #262B36; --accent: #5B73FF; --accent-ink: #9AA8FF; --accent-wash: #1A2045; --on-accent: #FFFFFF;
+  --user-bg: #ECEEF2; --user-ink: #0B0D12; --code-bg: #07080B; --code-ink: #E8EBF2;
+  --danger: #F2867A; --danger-wash: #3A1C19; --ok: #5CCB92; --shadow: 0 1px 2px rgba(0,0,0,.4), 0 8px 24px rgba(0,0,0,.3);
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--f-body); font-size: 15px; line-height: 1.6; -webkit-font-smoothing: antialiased; }
+button, input, textarea, select { font: inherit; color: inherit; }
+button { cursor: pointer; }
+a { color: var(--accent-ink); }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+
+.app { display: flex; height: 100%; min-height: 0; }
+
+/* sidebar */
+.side { width: 272px; flex: none; background: var(--panel); border-right: 1px solid var(--line); display: flex; flex-direction: column; min-height: 0;
+  padding: max(14px, env(safe-area-inset-top, 0px)) 12px max(14px, env(safe-area-inset-bottom, 0px)) max(12px, env(safe-area-inset-left, 0px)); }
+.brand { display: flex; align-items: center; gap: 10px; padding: 6px 8px 14px; text-decoration: none; color: var(--ink); }
+.brand img { width: 24px; height: 24px; image-rendering: pixelated; }
+.brand b { font-size: 18px; letter-spacing: -0.02em; }
+.brand b span { color: var(--accent); }
+.brand small { font-family: var(--f-mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); border: 1px solid var(--line); padding: 0 6px; border-radius: 4px; }
+.new-chat { display: flex; align-items: center; gap: 8px; width: 100%; min-height: 42px; padding: 0 12px; border: 1px solid var(--line); background: var(--panel); border-radius: 10px; font-weight: 600; }
+.new-chat:hover { border-color: var(--accent); }
+.hist-label { font-size: 12px; color: var(--muted); padding: 18px 8px 6px; }
+.hist { list-style: none; margin: 0; padding: 0; overflow-y: auto; flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 2px; }
+.hist button { width: 100%; text-align: left; border: 0; background: transparent; padding: 8px 10px; border-radius: 8px; color: var(--ink-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-height: 36px; }
+.hist button:hover { background: var(--panel-2); }
+.hist button[aria-current="true"] { background: var(--accent-wash); color: var(--ink); font-weight: 600; }
+.side-foot { border-top: 1px solid var(--line); padding-top: 12px; display: flex; flex-direction: column; gap: 6px; }
+.key-btn { display: flex; align-items: center; gap: 10px; border: 1px solid var(--line); background: var(--panel); border-radius: 10px; padding: 9px 12px; text-align: left; min-height: 44px; }
+.key-btn .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--muted); flex: none; }
+.key-btn.ok .dot { background: var(--ok); }
+.key-btn span { display: flex; flex-direction: column; line-height: 1.3; }
+.key-btn small { color: var(--muted); font-size: 12px; }
+.side-links { display: flex; flex-wrap: wrap; gap: 4px 14px; padding: 4px 8px 0; font-size: 13px; }
+.side-links a { color: var(--muted); text-decoration: none; }
+.side-links a:hover { color: var(--ink); }
+
+/* main */
+.main { flex: 1; min-width: 0; display: flex; flex-direction: column; min-height: 0; }
+.top { display: flex; align-items: center; gap: 12px; padding: max(10px, env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-right, 0px)) 10px 16px; border-bottom: 1px solid var(--line); background: var(--bg); min-height: 56px; }
+.menu-btn { display: none; border: 1px solid var(--line); background: var(--panel); border-radius: 8px; width: 40px; height: 40px; align-items: center; justify-content: center; }
+.top h1 { margin: 0; font-size: 15px; font-weight: 600; flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.models { display: flex; gap: 6px; flex-wrap: wrap; }
+.chip { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; color: var(--ink-2); background: var(--panel); border: 1px solid var(--line); border-radius: 999px; padding: 3px 10px 3px 4px; white-space: nowrap; }
+.chip img { width: 20px; height: 20px; border-radius: 5px; object-fit: contain; background: var(--panel); }
+.demo-pill { font-family: var(--f-mono); font-size: 11.5px; color: var(--ink-2); border: 1px dashed var(--muted); border-radius: 6px; padding: 2px 8px; white-space: nowrap; }
+
+.thread { flex: 1; overflow-y: auto; min-height: 0; padding: 24px max(16px, env(safe-area-inset-right, 0px)) 24px max(16px, env(safe-area-inset-left, 0px)); scroll-behavior: smooth; }
+.col { max-width: 820px; margin: 0 auto; display: flex; flex-direction: column; gap: 22px; }
+
+/* empty state */
+.empty { padding-top: min(10vh, 80px); display: flex; flex-direction: column; gap: 26px; }
+.empty h2 { margin: 0; font-size: clamp(28px, 4vw, 40px); font-weight: 700; letter-spacing: -0.03em; line-height: 1.1; text-wrap: balance; }
+.empty p { margin: 0; color: var(--ink-2); max-width: 36em; }
+.starters { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
+.starter { text-align: left; background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 16px; display: flex; flex-direction: column; gap: 10px; min-height: 150px; box-shadow: var(--shadow); }
+.starter:hover { border-color: var(--accent); }
+.starter .who { display: flex; align-items: center; gap: 10px; }
+.starter .who img { width: 36px; height: 36px; border-radius: 9px; object-fit: contain; }
+.starter .who b { display: block; font-size: 15px; }
+.starter .who small { display: block; font-size: 12px; color: var(--muted); }
+.starter q { color: var(--ink-2); font-size: 14px; quotes: '“' '”'; }
+
+/* messages */
+.msg { display: flex; gap: 12px; align-items: flex-start; }
+.msg.user { justify-content: flex-end; }
+.bubble { background: var(--user-bg); color: var(--user-ink); border-radius: 16px 16px 4px 16px; padding: 10px 14px; max-width: min(85%, 620px); white-space: pre-wrap; word-break: break-word; }
+.bubble .thumbs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px; }
+.bubble .thumbs img { width: 88px; height: 88px; object-fit: cover; border-radius: 8px; }
+.avatar { width: 30px; height: 30px; flex: none; border-radius: 8px; background: var(--panel); border: 1px solid var(--line); display: grid; place-items: center; margin-top: 2px; }
+.avatar img { width: 16px; height: 16px; image-rendering: pixelated; }
+.answer { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 12px; }
+.md { word-break: break-word; }
+.md p { margin: 0 0 10px; }
+.md p:last-child { margin-bottom: 0; }
+.md ul, .md ol { margin: 0 0 10px; padding-left: 22px; }
+.md code { font-family: var(--f-mono); font-size: .9em; background: var(--panel-2); padding: 1px 5px; border-radius: 4px; }
+.md pre { background: var(--code-bg); color: var(--code-ink); padding: 14px 16px; border-radius: 10px; overflow-x: auto; margin: 0 0 10px; }
+.md pre code { background: none; padding: 0; color: inherit; font-size: 13px; line-height: 1.6; }
+.md h3 { font-size: 16px; margin: 6px 0 6px; }
+.caret { display: inline-block; width: 8px; height: 16px; background: var(--accent); vertical-align: -2px; margin-left: 2px; animation: blink 1s steps(2) infinite; }
+@keyframes blink { 50% { opacity: 0; } }
+
+.tool { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; box-shadow: var(--shadow); }
+.tool-head { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-bottom: 1px solid var(--line); flex-wrap: wrap; }
+.tool-head img { width: 24px; height: 24px; border-radius: 6px; object-fit: contain; }
+.tool-head b { font-size: 14px; }
+.tool-head .what { font-size: 13px; color: var(--muted); flex: 1; min-width: 160px; }
+.status { font-size: 12px; font-weight: 600; padding: 2px 8px; border-radius: 999px; background: var(--panel-2); color: var(--ink-2); }
+.status.done { background: var(--accent-wash); color: var(--accent-ink); }
+.status.error { background: var(--danger-wash); color: var(--danger); }
+.tool-body { padding: 12px 14px 14px; display: flex; flex-direction: column; gap: 10px; }
+.tool details { font-size: 13.5px; color: var(--ink-2); }
+.tool summary { cursor: pointer; color: var(--muted); font-size: 13px; }
+.bar { height: 6px; background: var(--panel-2); border-radius: 999px; overflow: hidden; }
+.bar i { display: block; height: 100%; background: var(--accent); border-radius: 999px; transition: width .4s ease; }
+.bar.indet i { width: 35%; animation: slide 1.2s ease-in-out infinite; }
+@keyframes slide { 0% { transform: translateX(-100%); } 100% { transform: translateX(300%); } }
+.media { display: block; width: 100%; max-width: 100%; max-height: 68vh; object-fit: contain; border-radius: 10px; background: var(--panel-2); }
+.media-actions { display: flex; gap: 14px; font-size: 13px; }
+.err { color: var(--danger); font-size: 14px; }
+.served { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; font-size: 12px; color: var(--muted); }
+.served img { width: 16px; height: 16px; border-radius: 4px; object-fit: contain; }
+.served span { display: inline-flex; align-items: center; gap: 5px; }
+
+/* composer */
+.composer-wrap { padding: 10px max(16px, env(safe-area-inset-right, 0px)) max(14px, env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px)); background: var(--bg); }
+.composer { max-width: 820px; margin: 0 auto; background: var(--panel); border: 1.5px solid var(--line); border-radius: 18px; padding: 10px 10px 8px 14px; box-shadow: var(--shadow); }
+.composer:focus-within { border-color: var(--accent); }
+.composer.drag { border-style: dashed; border-color: var(--accent); }
+.attachments { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 8px; }
+.attachments:empty { display: none; }
+.att { position: relative; width: 64px; height: 64px; }
+.att img { width: 64px; height: 64px; object-fit: cover; border-radius: 10px; border: 1px solid var(--line); }
+.att button { position: absolute; top: -6px; right: -6px; width: 22px; height: 22px; border-radius: 50%; border: 0; background: var(--ink); color: var(--bg); font-size: 13px; line-height: 22px; padding: 0; }
+textarea#input { width: 100%; border: 0; outline: none; resize: none; background: transparent; font-size: 15.5px; line-height: 1.55; max-height: 220px; min-height: 26px; padding: 4px 0; }
+.toolbar { display: flex; align-items: center; gap: 8px; margin-top: 6px; flex-wrap: wrap; }
+.icon-btn { width: 38px; height: 38px; border-radius: 10px; border: 1px solid var(--line); background: var(--panel); display: inline-flex; align-items: center; justify-content: center; flex: none; }
+.icon-btn:hover { border-color: var(--accent); }
+.modes { display: inline-flex; background: var(--panel-2); border-radius: 10px; padding: 3px; gap: 2px; flex-wrap: wrap; }
+.modes button { border: 0; background: transparent; border-radius: 8px; padding: 5px 10px; font-size: 13px; font-weight: 500; color: var(--ink-2); display: inline-flex; align-items: center; gap: 6px; min-height: 32px; }
+.modes button img { width: 16px; height: 16px; border-radius: 4px; object-fit: contain; }
+.modes button[aria-checked="true"] { background: var(--panel); color: var(--ink); box-shadow: 0 1px 2px rgba(11,13,18,.12); font-weight: 600; }
+.spacer { flex: 1; }
+.send { height: 38px; min-width: 38px; padding: 0 14px; border-radius: 10px; border: 0; background: var(--accent); color: var(--on-accent); font-weight: 600; display: inline-flex; align-items: center; gap: 8px; }
+.send:disabled { opacity: .45; cursor: not-allowed; }
+.send.stop { background: var(--ink); color: var(--bg); }
+.hint { max-width: 820px; margin: 8px auto 0; font-size: 12px; color: var(--muted); text-align: center; }
+
+/* dialog */
+dialog { border: 1px solid var(--line); border-radius: 16px; padding: 0; background: var(--panel); color: var(--ink); width: min(460px, calc(100vw - 32px)); box-shadow: var(--shadow); }
+dialog::backdrop { background: rgba(11,13,18,.45); }
+.dlg { padding: 22px; display: flex; flex-direction: column; gap: 14px; }
+.dlg h2 { margin: 0; font-size: 18px; }
+.dlg p { margin: 0; color: var(--ink-2); font-size: 14px; }
+.dlg input { width: 100%; border: 1.5px solid var(--line); border-radius: 10px; padding: 10px 12px; font-family: var(--f-mono); font-size: 14px; background: var(--bg); }
+.dlg input:focus { border-color: var(--accent); outline: none; }
+.dlg .row { display: flex; gap: 8px; justify-content: flex-end; flex-wrap: wrap; }
+.btn { min-height: 40px; padding: 0 16px; border-radius: 10px; border: 1px solid var(--line); background: var(--panel); font-weight: 600; }
+.btn.primary { background: var(--accent); color: var(--on-accent); border-color: var(--accent); }
+.dlg .msg-line { font-size: 13px; min-height: 20px; }
+.dlg .msg-line.bad { color: var(--danger); }
+.dlg .msg-line.good { color: var(--ok); }
+
+.scrim { display: none; }
+@media (max-width: 860px) {
+  .side { position: fixed; inset: 0 auto 0 0; z-index: 30; transform: translateX(-100%); transition: transform .2s ease; box-shadow: var(--shadow); }
+  .app.nav-open .side { transform: none; }
+  .app.nav-open .scrim { display: block; position: fixed; inset: 0; background: rgba(11,13,18,.4); z-index: 20; }
+  .menu-btn { display: inline-flex; }
+  .models .chip span.name { display: none; }
+  .chip { padding: 3px; }
+}
+@media (max-width: 520px) {
+  .models { display: none; }
+  .modes button span { display: none; }
+  .modes button { padding: 5px 8px; }
+  .send span { display: none; }
+}
+</style>
+</head>
+<body>
+<div class="app" id="app">
+  <aside class="side" aria-label="Conversations">
+    <a class="brand" href="index.html" aria-label="ChinaAPI home">
+      <img src="assets/brand/chinaapi-mark.svg" alt="">
+      <b>China<span>API</span></b>
+      <small>Studio</small>
+    </a>
+    <button class="new-chat" id="newChat" type="button">
+      <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      New chat
+    </button>
+    <div class="hist-label">Recent</div>
+    <ul class="hist" id="hist"></ul>
+    <div class="side-foot">
+      <button class="key-btn" id="keyBtn" type="button">
+        <span class="dot" aria-hidden="true"></span>
+        <span><b id="keyTitle">Add API key</b><small id="keySub">Needed to chat</small></span>
+      </button>
+      <nav class="side-links" aria-label="Links">
+        <a href="index.html">Home</a>
+        <a href="playground.html">Playground</a>
+        <a href="console.html">Console</a>
+        <a href="pricing.html">Pricing</a>
+      </nav>
+    </div>
+  </aside>
+  <div class="scrim" id="scrim"></div>
+
+  <main class="main">
+    <header class="top">
+      <button class="menu-btn" id="menuBtn" type="button" aria-label="Open conversations">
+        <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M3 5h12M3 9h12M3 13h12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      </button>
+      <h1 id="chatTitle">New chat</h1>
+      <span class="demo-pill" id="demoPill" hidden>Demo · sample outputs</span>
+      <div class="models" aria-label="Models in this Studio">
+        <span class="chip"><img src="assets/brand/deepseek.svg" alt=""><span class="name">DeepSeek V4.1 Flash</span></span>
+        <span class="chip"><img src="assets/brand/dreamina.png" alt=""><span class="name">Seedream 5.0 Pro</span></span>
+        <span class="chip"><img src="assets/brand/seed.png" alt=""><span class="name">Seedance 2.5</span></span>
+      </div>
+    </header>
+
+    <section class="thread" id="thread" aria-live="polite">
+      <div class="col" id="col"></div>
+    </section>
+
+    <footer class="composer-wrap">
+      <form class="composer" id="composer">
+        <div class="attachments" id="attachments"></div>
+        <label for="input" class="sr" style="position:absolute;left:-9999px">Message</label>
+        <textarea id="input" rows="1" placeholder="Ask anything, or describe an image or video to make"></textarea>
+        <div class="toolbar">
+          <input type="file" id="file" accept="image/*" multiple hidden>
+          <button class="icon-btn" id="attachBtn" type="button" aria-label="Attach images">
+            <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M12.5 8.5l-4.6 4.6a2.6 2.6 0 01-3.7-3.7l5.3-5.3a1.7 1.7 0 012.4 2.4l-5 5a.8.8 0 01-1.1-1.1l4.5-4.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <div class="modes" role="radiogroup" aria-label="What to make" id="modes">
+            <button type="button" role="radio" data-mode="auto" aria-checked="true"><img src="assets/brand/chinaapi-mark.svg" alt="" style="image-rendering:pixelated"><span>Auto</span></button>
+            <button type="button" role="radio" data-mode="text" aria-checked="false"><img src="assets/brand/deepseek.svg" alt=""><span>Text</span></button>
+            <button type="button" role="radio" data-mode="image" aria-checked="false"><img src="assets/brand/dreamina.png" alt=""><span>Image</span></button>
+            <button type="button" role="radio" data-mode="video" aria-checked="false"><img src="assets/brand/seed.png" alt=""><span>Video</span></button>
+          </div>
+          <span class="spacer"></span>
+          <button class="send" id="send" type="submit" disabled>
+            <span id="sendLabel">Send</span>
+            <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true" id="sendIcon"><path d="M7 12V2M2.5 6.5L7 2l4.5 4.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        </div>
+      </form>
+      <p class="hint" id="hint">Auto lets DeepSeek decide when to draw with Seedream or film with Seedance. Enter to send, Shift+Enter for a new line.</p>
+    </footer>
+  </main>
+</div>
+
+<dialog id="keyDialog" aria-labelledby="keyDlgTitle">
+  <form class="dlg" method="dialog" id="keyForm">
+    <h2 id="keyDlgTitle">Your ChinaAPI key</h2>
+    <p>Studio uses your own key, so usage shows up in your console. Create one there and paste it here. It is stored only in this browser.</p>
+    <label for="keyInput" style="font-size:13px;font-weight:600">API key</label>
+    <input id="keyInput" type="password" autocomplete="off" spellcheck="false" placeholder="sk-...">
+    <div class="msg-line" id="keyMsg" role="status"></div>
+    <div class="row">
+      <a class="btn" id="getKeyLink" href="console.html" style="display:inline-flex;align-items:center;text-decoration:none;color:var(--ink)">Get a key</a>
+      <button class="btn" type="button" id="keyRemove">Remove</button>
+      <button class="btn" type="button" id="keyCancel">Cancel</button>
+      <button class="btn primary" type="button" id="keySave">Save</button>
+    </div>
+  </form>
+</dialog>
+
+<script src="assets/site.js"></script>
+<script>
+(() => {
+  'use strict';
+  const $ = (id) => document.getElementById(id);
+  const LOGO = { text: 'assets/brand/deepseek.svg', image: 'assets/brand/dreamina.png', video: 'assets/brand/seed.png' };
+  const LABEL = { text: 'DeepSeek V4.1 Flash', image: 'Seedream 5.0 Pro', video: 'Seedance 2.5' };
+
+  const store = {
+    get(k, d) { try { const v = localStorage.getItem(k); return v === null ? d : JSON.parse(v); } catch { return d; } },
+    set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); return true; } catch { return false; } },
+    del(k) { try { localStorage.removeItem(k); } catch { /* ignore */ } },
+  };
+
+  const state = {
+    config: { demo: true, trial: false },
+    serverless: true,
+    key: store.get('chinaapi.key', ''),
+    chats: store.get('chinaapi.chats', []),
+    chatId: null,
+    mode: 'auto',
+    attachments: [],
+    busy: false,
+    abort: null,
+  };
+
+  // ---------- helpers ----------
+  const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  function inline(s) {
+    return s
+      .replace(/`([^`]+)`/g, '<code>$1</code>')
+      .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+      .replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
+  }
+  function markdown(src) {
+    const out = [];
+    const parts = String(src).split(/```/);
+    parts.forEach((part, i) => {
+      if (i % 2 === 1) {
+        const nl = part.indexOf('\n');
+        const code = nl >= 0 ? part.slice(nl + 1) : part;
+        out.push('<pre><code>' + esc(code.replace(/\n$/, '')) + '</code></pre>');
+        return;
+      }
+      const blocks = esc(part).split(/\n{2,}/);
+      for (const b of blocks) {
+        const t = b.trim();
+        if (!t) continue;
+        const lines = t.split('\n');
+        if (lines.every((l) => /^\s*[-*] /.test(l))) out.push('<ul>' + lines.map((l) => '<li>' + inline(l.replace(/^\s*[-*] /, '')) + '</li>').join('') + '</ul>');
+        else if (lines.every((l) => /^\s*\d+[.)] /.test(l))) out.push('<ol>' + lines.map((l) => '<li>' + inline(l.replace(/^\s*\d+[.)] /, '')) + '</li>').join('') + '</ol>');
+        else if (/^#{1,4} /.test(t) && lines.length === 1) out.push('<h3>' + inline(t.replace(/^#+ /, '')) + '</h3>');
+        else out.push('<p>' + inline(lines.join('<br>')) + '</p>');
+      }
+    });
+    return out.join('');
+  }
+  const uid = () => Math.random().toString(36).slice(2, 10) + Date.now().toString(36);
+  const current = () => state.chats.find((c) => c.id === state.chatId);
+
+  function saveChats() {
+    state.chats.sort((a, b) => b.updated - a.updated);
+    const trimmed = state.chats.slice(0, 40);
+    if (!store.set('chinaapi.chats', trimmed)) {
+      // Storage full: keep the text, drop attached images from older chats.
+      const light = trimmed.map((c, i) => i < 3 ? c : { ...c, messages: c.messages.map((m) => ({ ...m, images: [] })) });
+      store.set('chinaapi.chats', light);
+    }
+  }
+
+  // ---------- rendering ----------
+  function renderHistory() {
+    const ul = $('hist');
+    ul.innerHTML = '';
+    if (!state.chats.length) {
+      ul.innerHTML = '<li style="padding:6px 10px;color:var(--muted);font-size:13px">Your chats will show up here.</li>';
+      return;
+    }
+    for (const c of state.chats) {
+      const li = document.createElement('li');
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.textContent = c.title || 'New chat';
+      b.setAttribute('aria-current', c.id === state.chatId ? 'true' : 'false');
+      b.addEventListener('click', () => { openChat(c.id); closeNav(); });
+      li.appendChild(b);
+      ul.appendChild(li);
+    }
+  }
+
+  function renderEmpty() {
+    const col = $('col');
+    col.innerHTML = `
+      <div class="empty">
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <h2>What do you want to make?</h2>
+          <p>One chat for words, pictures and video. DeepSeek answers, Seedream draws, Seedance films. All three are the newest versions.</p>
+        </div>
+        <div class="starters">
+          <button class="starter" type="button" data-mode="auto" data-prompt="Explain the difference between a REST API and a webhook, with a short example.">
+            <span class="who"><img src="${LOGO.text}" alt=""><span><b>Ask anything</b><small>DeepSeek V4.1 Flash</small></span></span>
+            <q>Explain the difference between a REST API and a webhook, with a short example.</q>
+          </button>
+          <button class="starter" type="button" data-mode="image" data-prompt="A koi fish gliding over a neon city at night, poster style, wide format">
+            <span class="who"><img src="${LOGO.image}" alt=""><span><b>Create an image</b><small>Seedream 5.0 Pro</small></span></span>
+            <q>A koi fish gliding over a neon city at night, poster style, wide format</q>
+          </button>
+          <button class="starter" type="button" data-mode="video" data-prompt="A koi fish swims through a neon city at night, slow camera pan, soft synth soundtrack">
+            <span class="who"><img src="${LOGO.video}" alt=""><span><b>Make a video</b><small>Seedance 2.5</small></span></span>
+            <q>A koi fish swims through a neon city at night, slow camera pan, soft synth soundtrack</q>
+          </button>
+        </div>
+      </div>`;
+    col.querySelectorAll('.starter').forEach((b) => b.addEventListener('click', () => {
+      setMode(b.dataset.mode);
+      $('input').value = b.dataset.prompt;
+      autosize();
+      updateSend();
+      $('input').focus();
+    }));
+  }
+
+  function renderUser(m) {
+    const row = document.createElement('div');
+    row.className = 'msg user';
+    const bubble = document.createElement('div');
+    bubble.className = 'bubble';
+    if (m.images && m.images.length) {
+      const thumbs = document.createElement('div');
+      thumbs.className = 'thumbs';
+      for (const src of m.images) { const img = document.createElement('img'); img.src = src; img.alt = 'Attached image'; thumbs.appendChild(img); }
+      bubble.appendChild(thumbs);
+    }
+    bubble.appendChild(document.createTextNode(m.text || ''));
+    row.appendChild(bubble);
+    return row;
+  }
+
+  function toolHTML(p) {
+    const verb = p.kind === 'video' ? 'Making video' : 'Creating image';
+    const status = p.status === 'done' ? '<span class="status done">Done</span>' : p.status === 'error' ? '<span class="status error">Failed</span>' : '<span class="status">Working</span>';
+    let body = `<details${p.status === 'done' ? '' : ' open'}><summary>Prompt</summary>${esc(p.prompt || '')}</details>`;
+    if (p.status === 'running') {
+      const pct = p.kind === 'video' ? Math.max(3, p.progress || 0) : null;
+      body += pct === null ? '<div class="bar indet"><i></i></div>' : `<div class="bar" role="progressbar" aria-valuenow="${pct}" aria-valuemin="0" aria-valuemax="100"><i style="width:${pct}%"></i></div>`;
+      body += `<div style="font-size:13px;color:var(--muted)">${p.kind === 'video' ? 'Videos usually take one to three minutes. You can keep this tab open.' : 'Usually ready in a few seconds.'}</div>`;
+    } else if (p.status === 'done' && p.url) {
+      body += p.kind === 'video'
+        ? `<video class="media" src="${esc(p.url)}" controls playsinline preload="metadata"></video>`
+        : `<a href="${esc(p.url)}" target="_blank" rel="noopener"><img class="media" src="${esc(p.url)}" alt="${esc(p.prompt || 'Generated image')}"></a>`;
+      body += `<div class="media-actions"><a href="${esc(p.url)}" target="_blank" rel="noopener">Open full size</a></div>`;
+    } else if (p.status === 'error') {
+      body += `<div class="err">${esc(p.error || 'Something went wrong')}</div>`;
+    }
+    return `<div class="tool-head"><img src="${LOGO[p.kind]}" alt=""><b>${esc(p.model || LABEL[p.kind])}</b><span class="what">${verb}${p.detail ? ' · ' + esc(p.detail) : ''}</span>${status}</div><div class="tool-body">${body}</div>`;
+  }
+
+  function renderAssistant(m, live) {
+    const row = document.createElement('div');
+    row.className = 'msg';
+    row.innerHTML = '<div class="avatar"><img src="assets/brand/chinaapi-mark.svg" alt=""></div>';
+    const ans = document.createElement('div');
+    ans.className = 'answer';
+    m.parts = m.parts || [];
+    m.parts.forEach((p, i) => {
+      if (p.type === 'text') {
+        if (!p.text.trim() && !(live && i === m.parts.length - 1)) return;
+        const d = document.createElement('div');
+        d.className = 'md';
+        d.innerHTML = markdown(p.text) + (live && i === m.parts.length - 1 ? '<span class="caret" aria-hidden="true"></span>' : '');
+        ans.appendChild(d);
+      } else if (p.type === 'tool') {
+        const d = document.createElement('div');
+        d.className = 'tool';
+        d.innerHTML = toolHTML(p);
+        ans.appendChild(d);
+      } else if (p.type === 'error') {
+        const d = document.createElement('div');
+        d.className = 'err';
+        d.textContent = p.text;
+        ans.appendChild(d);
+      }
+    });
+    if (live && !m.parts.length) {
+      const d = document.createElement('div');
+      d.className = 'md';
+      d.innerHTML = '<span class="caret" aria-hidden="true"></span>';
+      ans.appendChild(d);
+    }
+    if (!live && m.models && m.models.length) {
+      const s = document.createElement('div');
+      s.className = 'served';
+      s.innerHTML = m.models.map((k) => `<span><img src="${LOGO[k]}" alt="">${LABEL[k]}</span>`).join('<span aria-hidden="true">·</span>');
+      ans.appendChild(s);
+    }
+    row.appendChild(ans);
+    return row;
+  }
+
+  function renderThread() {
+    const chat = current();
+    const col = $('col');
+    $('chatTitle').textContent = chat ? chat.title : 'New chat';
+    if (!chat || !chat.messages.length) { renderEmpty(); return; }
+    col.innerHTML = '';
+    chat.messages.forEach((m, i) => {
+      const live = state.busy && i === chat.messages.length - 1 && m.role === 'assistant';
+      col.appendChild(m.role === 'user' ? renderUser(m) : renderAssistant(m, live));
+    });
+  }
+
+  function rerenderLast() {
+    const chat = current();
+    const col = $('col');
+    const last = chat.messages[chat.messages.length - 1];
+    const node = renderAssistant(last, state.busy);
+    if (col.lastElementChild) col.replaceChild(node, col.lastElementChild); else col.appendChild(node);
+    const t = $('thread');
+    if (t.scrollHeight - t.scrollTop - t.clientHeight < 240) t.scrollTop = t.scrollHeight;
+  }
+
+  // ---------- chats ----------
+  function newChat() {
+    state.chatId = null;
+    state.attachments = [];
+    renderAttachments();
+    renderHistory();
+    renderThread();
+    $('input').focus();
+  }
+  function openChat(id) {
+    if (state.busy) return;
+    state.chatId = id;
+    renderHistory();
+    renderThread();
+    const t = $('thread');
+    t.scrollTop = t.scrollHeight;
+  }
+
+  // ---------- composer ----------
+  function setMode(mode) {
+    state.mode = mode;
+    $('modes').querySelectorAll('button').forEach((b) => b.setAttribute('aria-checked', b.dataset.mode === mode ? 'true' : 'false'));
+    const ph = {
+      auto: 'Ask anything, or describe an image or video to make',
+      text: 'Ask DeepSeek anything',
+      image: 'Describe the image to create, or attach one to edit',
+      video: 'Describe the video: subject, motion, camera',
+    };
+    $('input').placeholder = ph[mode];
+  }
+  function autosize() {
+    const ta = $('input');
+    ta.style.height = 'auto';
+    ta.style.height = Math.min(220, ta.scrollHeight) + 'px';
+  }
+  function updateSend() {
+    const btn = $('send');
+    if (state.busy) {
+      btn.disabled = false;
+      btn.classList.add('stop');
+      $('sendLabel').textContent = 'Stop';
+      $('sendIcon').innerHTML = '<rect x="3" y="3" width="8" height="8" rx="1.5" fill="currentColor"/>';
+    } else {
+      btn.classList.remove('stop');
+      $('sendLabel').textContent = 'Send';
+      $('sendIcon').innerHTML = '<path d="M7 12V2M2.5 6.5L7 2l4.5 4.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>';
+      btn.disabled = !$('input').value.trim() && !state.attachments.length;
+    }
+  }
+  function renderAttachments() {
+    const box = $('attachments');
+    box.innerHTML = '';
+    state.attachments.forEach((src, i) => {
+      const d = document.createElement('div');
+      d.className = 'att';
+      d.innerHTML = `<img src="${src}" alt="Attachment ${i + 1}"><button type="button" aria-label="Remove attachment ${i + 1}">×</button>`;
+      d.querySelector('button').addEventListener('click', () => { state.attachments.splice(i, 1); renderAttachments(); updateSend(); });
+      box.appendChild(d);
+    });
+  }
+  function shrinkImage(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        const img = new Image();
+        img.onload = () => {
+          const max = 1536;
+          const scale = Math.min(1, max / Math.max(img.width, img.height));
+          const c = document.createElement('canvas');
+          c.width = Math.round(img.width * scale);
+          c.height = Math.round(img.height * scale);
+          c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+          resolve(c.toDataURL('image/jpeg', 0.86));
+        };
+        img.onerror = () => reject(new Error('Could not read that image'));
+        img.src = reader.result;
+      };
+      reader.onerror = () => reject(new Error('Could not read that file'));
+      reader.readAsDataURL(file);
+    });
+  }
+  async function addFiles(files) {
+    for (const f of files) {
+      if (!f.type.startsWith('image/')) continue;
+      if (state.attachments.length >= 4) break;
+      try { state.attachments.push(await shrinkImage(f)); } catch (e) { /* skip unreadable files */ }
+    }
+    renderAttachments();
+    updateSend();
+  }
+
+  // ---------- transports ----------
+  async function* sseEvents(res) {
+    const reader = res.body.getReader();
+    const dec = new TextDecoder();
+    let buf = '';
+    for (;;) {
+      const { value, done } = await reader.read();
+      if (done) break;
+      buf += dec.decode(value, { stream: true });
+      let i;
+      while ((i = buf.indexOf('\n\n')) >= 0) {
+        const block = buf.slice(0, i);
+        buf = buf.slice(i + 2);
+        for (const line of block.split('\n')) {
+          if (line.startsWith('data:')) { try { yield JSON.parse(line.slice(5).trim()); } catch { /* skip */ } }
+        }
+      }
+    }
+  }
+
+  async function* serverTransport(payload, signal) {
+    const headers = { 'Content-Type': 'application/json' };
+    if (state.key) headers.Authorization = 'Bearer ' + state.key;
+    const res = await fetch('api/chat', { method: 'POST', headers, body: JSON.stringify(payload), signal });
+    if (!res.ok) {
+      let msg = 'Something went wrong (' + res.status + ')';
+      try { msg = (await res.json()).error || msg; } catch { /* keep default */ }
+      if (res.status === 401) openKeyDialog(msg);
+      throw new Error(msg);
+    }
+    yield* sseEvents(res);
+  }
+
+  // In-browser demo used when there is no server (for example, a static preview).
+  const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+  async function* demoTransport(payload, signal) {
+    const last = payload.messages[payload.messages.length - 1];
+    const ask = last.text || '';
+    const zh = /[一-鿿]/.test(ask);
+    const wantsVideo = payload.mode === 'video' || (payload.mode === 'auto' && /(video|clip|animate|animation|movie|film|视频|动画|短片)/i.test(ask));
+    const wantsImage = !wantsVideo && (payload.mode === 'image' || (payload.mode === 'auto' && /(draw|image|picture|photo|poster|logo|illustrat|painting|画|图|海报|插画)/i.test(ask)));
+    const say = async function* (t) { for (const piece of t.match(/.{1,6}/gs) || []) { if (signal.aborted) return; await sleep(18); yield { t: 'delta', text: piece }; } };
+    yield { t: 'start', mode: payload.mode };
+    if (wantsImage || wantsVideo) {
+      const kind = wantsVideo ? 'video' : 'image';
+      if (payload.mode === 'auto') yield* say(zh ? (kind === 'video' ? '好的，我来用 Seedance 生成这段视频。' : '好的，我来用 Seedream 画这张图。') : (kind === 'video' ? 'Sure, making that video with Seedance.' : 'Sure, creating that with Seedream.'));
+      const id = kind + '_demo';
+      yield { t: 'tool', id, kind, model: LABEL[kind], prompt: ask || 'A koi fish over a neon city at night', detail: kind === 'video' ? '5 s · 720p · 16:9 · sound' : '2048x1152 · 16:9' };
+      if (kind === 'video') {
+        for (let p = 4; p < 100; p += 8) { if (signal.aborted) return; await sleep(260); yield { t: 'progress', id, progress: p }; }
+        yield { t: 'video', id, url: 'samples/koi.mp4', prompt: ask };
+      } else {
+        await sleep(1400);
+        yield { t: 'image', id, url: 'samples/koi.png', prompt: ask };
+      }
+      if (payload.mode === 'auto') {
+        yield { t: 'delta', text: '\n\n' };
+        yield* say(zh ? (kind === 'video' ? '视频做好了。这是演示用的示例片段，接上 API Key 后就是 Seedance 2.5 的真实生成。' : '图做好了。这是演示用的示例图，接上 API Key 后就是 Seedream 5.0 Pro 的真实生成。')
+          : (kind === 'video' ? 'Done. This is a sample clip for the demo; with an API key, Seedance 2.5 makes the real one.' : 'Done. This is a sample image for the demo; with an API key, Seedream 5.0 Pro makes the real one.'));
+      }
+      yield { t: 'done', models: payload.mode === 'auto' ? ['text', kind] : [kind] };
+      return;
+    }
+    yield* say(zh
+      ? '这是演示模式，还没接上 DeepSeek，所以这是一条示例回复。接上 API Key 后，这里会是 DeepSeek V4.1 Flash 的真实回答。\n\n试试切到 **Image** 或 **Video**，或者直接说“画一张霓虹城市里的锦鲤海报”。'
+      : 'This is demo mode, so DeepSeek is not connected and this is a sample reply. With an API key, DeepSeek V4.1 Flash answers here.\n\nTry switching to **Image** or **Video**, or just ask: "Draw a poster of a koi fish over a neon city".');
+    yield { t: 'done', models: ['text'] };
+  }
+
+  // ---------- send ----------
+  async function send() {
+    if (state.busy) { state.abort?.abort(); return; }
+    const text = $('input').value.trim();
+    if (!text && !state.attachments.length) return;
+    if (!state.serverless && !state.config.demo && !state.config.trial && !state.key) { openKeyDialog(); return; }
+
+    let chat = current();
+    if (!chat) {
+      chat = { id: uid(), title: (text || 'Image chat').slice(0, 48), updated: Date.now(), messages: [] };
+      state.chats.unshift(chat);
+      state.chatId = chat.id;
+    }
+    chat.messages.push({ role: 'user', text, images: state.attachments.slice() });
+    const answer = { role: 'assistant', parts: [], models: [] };
+    chat.messages.push(answer);
+    chat.updated = Date.now();
+    $('input').value = '';
+    state.attachments = [];
+    renderAttachments();
+    autosize();
+    state.busy = true;
+    updateSend();
+    renderHistory();
+    renderThread();
+    $('thread').scrollTop = $('thread').scrollHeight;
+
+    const payload = {
+      mode: state.mode,
+      messages: chat.messages.slice(0, -1).map((m) => m.role === 'user'
+        ? { role: 'user', text: m.text, images: m.images || [] }
+        : {
+            role: 'assistant',
+            text: (m.parts || []).filter((p) => p.type === 'text').map((p) => p.text).join(''),
+            media: (m.parts || []).filter((p) => p.type === 'tool' && p.status === 'done' && p.url).map((p) => ({ kind: p.kind, url: p.url, prompt: p.prompt })),
+          }),
+    };
+    const ctrl = new AbortController();
+    state.abort = ctrl;
+    const tools = {};
+    const textPart = () => {
+      const last = answer.parts[answer.parts.length - 1];
+      if (last && last.type === 'text') return last;
+      const p = { type: 'text', text: '' };
+      answer.parts.push(p);
+      return p;
+    };
+    let pending = false;
+    const paint = () => { if (!pending) { pending = true; requestAnimationFrame(() => { pending = false; rerenderLast(); }); } };
+    try {
+      const transport = state.serverless ? demoTransport : serverTransport;
+      for await (const ev of transport(payload, ctrl.signal)) {
+        if (ev.t === 'delta') textPart().text += ev.text;
+        else if (ev.t === 'tool') { const p = { type: 'tool', id: ev.id, kind: ev.kind, model: ev.model, prompt: ev.prompt, detail: ev.detail, status: 'running', progress: 0 }; tools[ev.id] = p; answer.parts.push(p); }
+        else if (ev.t === 'progress' && tools[ev.id]) tools[ev.id].progress = ev.progress;
+        else if ((ev.t === 'image' || ev.t === 'video') && tools[ev.id]) { tools[ev.id].status = 'done'; tools[ev.id].url = ev.url; }
+        else if (ev.t === 'tool_error' && tools[ev.id]) { tools[ev.id].status = 'error'; tools[ev.id].error = ev.message; }
+        else if (ev.t === 'error') answer.parts.push({ type: 'error', text: ev.message });
+        else if (ev.t === 'done') answer.models = ev.models || [];
+        paint();
+      }
+    } catch (err) {
+      if (!ctrl.signal.aborted) answer.parts.push({ type: 'error', text: err.message || 'Connection lost' });
+    }
+    if (ctrl.signal.aborted) {
+      answer.parts.push({ type: 'error', text: 'Stopped.' });
+      for (const p of Object.values(tools)) if (p.status === 'running') { p.status = 'error'; p.error = 'Stopped before it finished.'; }
+    }
+    state.busy = false;
+    state.abort = null;
+    chat.updated = Date.now();
+    saveChats();
+    renderHistory();
+    rerenderLast();
+    updateSend();
+  }
+
+  // ---------- key dialog ----------
+  function refreshKeyButton() {
+    const btn = $('keyBtn');
+    if (state.key) {
+      btn.classList.add('ok');
+      $('keyTitle').textContent = 'API key added';
+      $('keySub').textContent = '…' + state.key.slice(-4) + ' · usage billed to you';
+    } else {
+      btn.classList.remove('ok');
+      $('keyTitle').textContent = 'Add API key';
+      $('keySub').textContent = state.serverless || state.config.demo ? 'Demo works without one' : state.config.trial ? 'Free trial active' : 'Needed to chat';
+    }
+  }
+  function openKeyDialog(message) {
+    const dlg = $('keyDialog');
+    $('keyInput').value = state.key || '';
+    $('keyMsg').textContent = message || '';
+    $('keyMsg').className = 'msg-line' + (message ? ' bad' : '');
+    if (typeof dlg.showModal === 'function') dlg.showModal(); else dlg.setAttribute('open', '');
+    setTimeout(() => $('keyInput').focus(), 30);
+  }
+  async function saveKey() {
+    const key = $('keyInput').value.trim();
+    const msg = $('keyMsg');
+    if (!key) { msg.textContent = 'Paste a key first.'; msg.className = 'msg-line bad'; return; }
+    if (!state.serverless) {
+      msg.textContent = 'Checking…'; msg.className = 'msg-line';
+      try {
+        const r = await fetch('api/key/check', { method: 'POST', headers: { Authorization: 'Bearer ' + key } });
+        const data = await r.json();
+        if (!data.ok) { msg.textContent = data.error || 'This key was not accepted.'; msg.className = 'msg-line bad'; return; }
+      } catch { msg.textContent = 'Could not reach the server. Try again.'; msg.className = 'msg-line bad'; return; }
+    }
+    state.key = key;
+    store.set('chinaapi.key', key);
+    msg.textContent = 'Saved.'; msg.className = 'msg-line good';
+    refreshKeyButton();
+    setTimeout(() => $('keyDialog').close(), 400);
+  }
+
+  // ---------- nav (mobile) ----------
+  function closeNav() { $('app').classList.remove('nav-open'); }
+
+  // ---------- wire up ----------
+  $('composer').addEventListener('submit', (e) => { e.preventDefault(); send(); });
+  $('input').addEventListener('input', () => { autosize(); updateSend(); });
+  $('input').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) { e.preventDefault(); if (!state.busy) send(); }
+  });
+  $('input').addEventListener('paste', (e) => {
+    const files = [...(e.clipboardData?.files || [])].filter((f) => f.type.startsWith('image/'));
+    if (files.length) { e.preventDefault(); addFiles(files); }
+  });
+  const comp = $('composer');
+  comp.addEventListener('dragover', (e) => { e.preventDefault(); comp.classList.add('drag'); });
+  comp.addEventListener('dragleave', () => comp.classList.remove('drag'));
+  comp.addEventListener('drop', (e) => { e.preventDefault(); comp.classList.remove('drag'); addFiles([...(e.dataTransfer?.files || [])]); });
+  $('attachBtn').addEventListener('click', () => $('file').click());
+  $('file').addEventListener('change', (e) => { addFiles([...e.target.files]); e.target.value = ''; });
+  $('modes').querySelectorAll('button').forEach((b) => b.addEventListener('click', () => setMode(b.dataset.mode)));
+  $('newChat').addEventListener('click', () => { if (!state.busy) { newChat(); closeNav(); } });
+  $('keyBtn').addEventListener('click', () => openKeyDialog());
+  $('keySave').addEventListener('click', saveKey);
+  $('keyCancel').addEventListener('click', () => $('keyDialog').close());
+  $('keyRemove').addEventListener('click', () => { state.key = ''; store.del('chinaapi.key'); refreshKeyButton(); $('keyDialog').close(); });
+  $('keyInput').addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); saveKey(); } });
+  $('menuBtn').addEventListener('click', () => $('app').classList.add('nav-open'));
+  $('scrim').addEventListener('click', closeNav);
+
+  async function boot() {
+    try {
+      const r = await fetch('config.json', { cache: 'no-store' });
+      if (!r.ok) throw new Error('no server');
+      state.config = await r.json();
+      state.serverless = false;
+    } catch {
+      state.serverless = true;
+    }
+    $('demoPill').hidden = !(state.serverless || state.config.demo);
+    if (!state.key && window.ChinaAPI && !state.serverless && !state.config.demo) { state.key = await window.ChinaAPI.apiKey.resolve(); }
+    refreshKeyButton();
+    const params = new URLSearchParams(location.search);
+    if (params.get('mode')) setMode(params.get('mode'));
+    if (params.get('q')) { $('input').value = params.get('q'); }
+    renderHistory();
+    renderThread();
+    autosize();
+    updateSend();
+  }
+  boot();
+})();
+</script>
+</body>
+</html>

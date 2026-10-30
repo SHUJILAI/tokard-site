@@ -1,0 +1,110 @@
+# Tokard: gateway (new-api) + website and card system (web) + HTTPS (Caddy)
+# Start:  cp .env.example .env  →  fill in .env  →  docker compose up -d
+# Only Caddy is reachable from the internet; everything else is on the private network.
+x-hardening: &hardening
+  restart: unless-stopped
+  security_opt: ["no-new-privileges:true"]
+  logging: { driver: json-file, options: { max-size: "20m", max-file: "5" } }
+
+services:
+  postgres:
+    <<: *hardening
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: newapi
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD}
+      POSTGRES_DB: newapi
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U newapi"]
+      interval: 5s
+      retries: 20
+
+  redis:
+    <<: *hardening
+    image: redis:7-alpine
+    command: ["redis-server", "--requirepass", "${REDIS_PASSWORD:?set REDIS_PASSWORD}", "--appendonly", "yes"]
+    volumes:
+      - redisdata:/data
+
+  # Open-source gateway: metering, budgets per key, routing to DeepSeek and BytePlus.
+  # Used unmodified (AGPL-3.0): keep its credit and link.
+  new-api:
+    <<: *hardening
+    image: ${NEWAPI_IMAGE:-calciumion/new-api:v1.0.0-rc.46}
+    depends_on:
+      postgres: { condition: service_healthy }
+      redis: { condition: service_started }
+    environment:
+      SQL_DSN: postgresql://newapi:${POSTGRES_PASSWORD}@postgres:5432/newapi
+      REDIS_CONN_STRING: redis://:${REDIS_PASSWORD}@redis:6379
+      SESSION_SECRET: ${NEWAPI_SESSION_SECRET:?set NEWAPI_SESSION_SECRET}
+      CRYPTO_SECRET: ${NEWAPI_CRYPTO_SECRET:?set NEWAPI_CRYPTO_SECRET}
+      TZ: UTC
+      # new-api's own console is only reachable from ADMIN_ALLOW_IPS, so its strict
+      # per-IP limit on key reveals would only throttle our card issuing (all from
+      # the web container's one address). 600 per 20 minutes leaves room for sales.
+      CRITICAL_RATE_LIMIT: ${NEWAPI_CRITICAL_RATE_LIMIT:-600}
+    volumes:
+      - ./data/new-api:/data
+
+  # Our code: pages, accounts, flips, shop, Stripe, card issuing, and the public
+  # API edge (api.<domain>/v1 → new-api, with coding / design / film model names).
+  web:
+    <<: *hardening
+    build: ./web
+    read_only: true
+    tmpfs: ["/tmp"]
+    depends_on: [new-api]
+    environment:
+      NODE_ENV: production
+      SITE_URL: https://${SITE_DOMAIN}
+      PUBLIC_API_URL: https://${API_DOMAIN}
+      GATEWAY_URL: http://new-api:3000
+      DATA_DIR: /data
+      # Caddy is the only proxy in front; add 1 per extra proxy (e.g. Cloudflare → 2)
+      TRUST_PROXY_HOPS: ${TRUST_PROXY_HOPS:-1}
+      SESSION_SECRET: ${WEB_SESSION_SECRET:?set WEB_SESSION_SECRET}
+      KEY_ENC_SECRET: ${KEY_ENC_SECRET:?set KEY_ENC_SECRET}
+      ISSUER_TOKEN: ${ISSUER_TOKEN:?set ISSUER_TOKEN}
+      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY:?set STRIPE_SECRET_KEY}
+      STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET:?set STRIPE_WEBHOOK_SECRET}
+      RESEND_API_KEY: ${RESEND_API_KEY:?set RESEND_API_KEY}
+      MAIL_FROM: ${MAIL_FROM:?set MAIL_FROM}
+      TURNSTILE_SITE_KEY: ${TURNSTILE_SITE_KEY:-}
+      TURNSTILE_SECRET: ${TURNSTILE_SECRET:-}
+      JACKPOTS_PER_DAY: ${JACKPOTS_PER_DAY:-20}
+      ULTIMATE_EVERY: ${ULTIMATE_EVERY:-10000}
+      ULTIMATE_NEED_USD: ${ULTIMATE_NEED_USD:-20}
+      ULTIMATE_ODDS: ${ULTIMATE_ODDS:-1000}
+      SHOP_LADDER_TEXT: ${SHOP_LADDER_TEXT:-5:15,20:20,100:25}
+      SHOP_LADDER_VIDEO: ${SHOP_LADDER_VIDEO:-5:10,20:14,100:17}
+      SHOP_LADDER_IMAGE: ${SHOP_LADDER_IMAGE:-5:0,20:0,100:0}
+      STUDIO_TRIAL_KEY: ${STUDIO_TRIAL_KEY:-}
+      STUDIO_TRIAL_PER_DAY: ${STUDIO_TRIAL_PER_DAY:-10}
+      STUDIO_TRIAL_VIDEO: ${STUDIO_TRIAL_VIDEO:-0}
+      MOCK: "0"
+    volumes:
+      - ./data/web:/data
+
+  caddy:
+    <<: *hardening
+    image: caddy:2-alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      SITE_DOMAIN: ${SITE_DOMAIN}
+      API_DOMAIN: ${API_DOMAIN}
+      ADMIN_DOMAIN: ${ADMIN_DOMAIN}
+      ADMIN_ALLOW_IPS: ${ADMIN_ALLOW_IPS:?set ADMIN_ALLOW_IPS (your own IP, e.g. 203.0.113.7/32)}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+    depends_on: [web, new-api]
+
+volumes:
+  pgdata:
+  redisdata:
+  caddy_data:

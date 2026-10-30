@@ -1,0 +1,515 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Playground · Tokard</title>
+<meta name="description" content="Try coding, design and film calls with a card key, then copy the code.">
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="theme-color" content="#F5F6F8">
+<link rel="icon" href="assets/brand/tokard-mark.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=Geist+Mono:wght@400;500;600;700&family=Hanken+Grotesk:wght@300..700&display=swap">
+<link rel="stylesheet" href="assets/site.css">
+<style>
+.head-row { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: end; gap: 16px; padding: 48px 0 28px; }
+.head-row h1 { font-weight: 800; font-size: clamp(40px, 5vw, 60px); line-height: 1; letter-spacing: -0.04em; }
+.grid { display: flex; flex-wrap: wrap; gap: 24px; align-items: flex-start; }
+.controls { flex: 1 1 360px; max-width: 460px; min-width: 0; display: flex; flex-direction: column; gap: 26px; }
+.step { display: flex; flex-direction: column; gap: 12px; }
+.step-label { font-family: var(--f-mono); font-size: 12.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-2); }
+.jobs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.job { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; text-align: left; padding: 14px 12px; min-height: 124px; background: var(--panel); border: 2px solid var(--line); color: var(--ink); }
+.job[aria-checked="true"] { background: var(--accent-wash); border-color: var(--accent); }
+.job img { width: 30px; height: 30px; object-fit: contain; border-radius: 6px; }
+.job b { font-size: 17px; }
+.job small { font-size: 12px; color: var(--muted); line-height: 1.35; }
+textarea.prompt { width: 100%; resize: vertical; border: 1.5px solid var(--ink); background: var(--panel); padding: 14px; font-size: 15px; line-height: 1.55; min-height: 150px; }
+textarea.prompt:focus { outline: 2px solid var(--accent); outline-offset: 2px; }
+.opts { display: flex; flex-direction: column; gap: 10px; }
+.opt { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.opt > span { font-size: 13px; color: var(--muted); min-width: 58px; }
+.seg { display: inline-flex; flex-wrap: wrap; }
+.seg button { font-family: var(--f-mono); font-size: 13px; background: var(--panel); border: 1px solid var(--line); padding: 6px 10px; min-height: 34px; margin: 0 -1px -1px 0; color: var(--ink); }
+.seg button[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); position: relative; }
+.keyline { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; font-size: 14px; color: var(--ink-2); }
+.keyline code { font-family: var(--f-mono); font-size: 13px; background: var(--panel); border: 1px solid var(--line); padding: 4px 8px; }
+.keyline button { background: none; border: 0; padding: 0; color: var(--accent); font-weight: 600; min-height: 32px; }
+.keyform { display: flex; gap: 8px; flex-wrap: wrap; }
+.keyform .input { flex: 1 1 220px; font-family: var(--f-mono); font-size: 14px; }
+.run { display: inline-flex; align-items: center; justify-content: center; gap: 12px; border: 0; padding: 16px 24px; min-height: 52px; font-size: 16px; font-weight: 600; color: #FFFFFF; background: var(--accent); }
+.run:hover:not(:disabled) { background: var(--ink); color: var(--bg); }
+.run:disabled { background: var(--ink); opacity: .85; cursor: progress; }
+
+.output { flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column; gap: 28px; }
+.screen { background: var(--code-bg); color: var(--code-ink); box-shadow: 10px 10px 0 var(--accent); }
+.bar { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; padding: 14px 20px; border-bottom: 1px solid var(--code-line); font-family: var(--f-mono); font-size: 12.5px; }
+.bar .st { display: inline-flex; align-items: center; gap: 10px; }
+.bar .dot { width: 8px; height: 8px; background: #5A6170; display: inline-block; }
+.bar .dot.run { background: var(--warn); }
+.bar .dot.ok { background: #2BD67B; }
+.bar .dot.bad { background: #F06A6A; }
+.bar .m { color: #A3AABA; }
+.body { padding: 26px 24px; min-height: 360px; }
+.body pre { margin: 0; font-family: var(--f-mono); font-size: 14px; line-height: 1.75; white-space: pre-wrap; word-break: break-word; color: var(--code-ink); }
+.body .idle { font-family: var(--f-mono); font-size: 14px; color: var(--code-dim); }
+.body .err { font-size: 15px; color: #FFB4B4; }
+.caret { display: inline-block; width: 9px; height: 17px; background: var(--accent); vertical-align: -3px; margin-left: 2px; }
+.stage { display: flex; flex-direction: column; gap: 14px; }
+.frame { width: 100%; aspect-ratio: 16 / 9; background: repeating-linear-gradient(45deg, #121626 0 12px, #171C30 12px 24px); display: flex; align-items: center; justify-content: center; overflow: hidden; }
+.frame img, .frame video { max-width: 100%; max-height: 100%; display: block; }
+.frame .wait { font-family: var(--f-mono); font-size: 13px; color: var(--code-dim); }
+.prog { display: flex; align-items: center; gap: 12px; font-family: var(--f-mono); font-size: 12.5px; color: #A3AABA; }
+.prog .track { flex: 1 1 auto; height: 8px; background: #1C2130; }
+.prog .fill { height: 8px; background: var(--accent); width: 0; transition: width .4s ease; }
+.metas { margin: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); border-top: 1px solid var(--code-line); }
+.metas div { padding: 14px 20px; border-right: 1px solid var(--code-line); display: flex; flex-direction: column; gap: 4px; }
+.metas dt { font-family: var(--f-mono); font-size: 11.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--code-dim); }
+.metas dd { margin: 0; font-size: 15px; font-weight: 600; color: #FFFFFF; }
+.snip { background: var(--panel); border: 1px solid var(--line); }
+.snip-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; padding: 10px 14px 10px 18px; border-bottom: 1px solid var(--line-2); }
+.snip-head b { font-size: 15px; }
+.snip pre { margin: 0; padding: 18px; font-family: var(--f-mono); font-size: 13px; line-height: 1.7; overflow-x: auto; white-space: pre; color: var(--ink); }
+.copy-btn { background: var(--panel); color: var(--ink); border: 1.5px solid var(--ink); font-family: var(--f-mono); font-size: 12px; padding: 6px 12px; min-height: 34px; }
+@media (max-width: 420px) { .job { min-height: 112px; padding: 12px 10px; } .job small { display: none; } }
+
+/* Tokard light system: soft radii, pill buttons, one ink terminal */
+.head-row { padding: 56px 0 32px; }
+.head-row h1 { font-weight: 500; font-size: clamp(48px, 6.4vw, 104px); line-height: .9; letter-spacing: -0.05em; }
+.step-label { font-size: 11.5px; letter-spacing: .14em; color: #8A91A0; }
+.job { border: 0; border-radius: 16px; box-shadow: inset 0 0 0 1px #E3E6EB; transition: box-shadow .2s ease, background .2s ease; }
+.job:hover { box-shadow: inset 0 0 0 1px #B9C0CC; }
+.job[aria-checked="true"] { background: #FFFFFF; border: 0; box-shadow: inset 0 0 0 2px var(--accent), 0 12px 24px -16px rgba(35,64,255,.5); }
+textarea.prompt { border: 0; border-radius: 16px; box-shadow: inset 0 0 0 1px #E3E6EB; }
+textarea.prompt:focus { outline: none; box-shadow: inset 0 0 0 2px var(--accent); }
+.seg { background: #EEF0F4; padding: 3px; border-radius: 999px; gap: 2px; }
+.seg button { border: 0; border-radius: 999px; margin: 0; background: transparent; }
+.seg button[aria-pressed="true"] { background: #FFFFFF; color: var(--ink); box-shadow: 0 1px 3px rgba(11,13,18,.14); }
+.keyline code { border: 0; border-radius: 8px; box-shadow: inset 0 0 0 1px #E3E6EB; }
+.run { border-radius: 999px; background: var(--ink); box-shadow: 0 10px 24px -12px rgba(11,13,18,.55); transition: background .3s ease; }
+.run:hover:not(:disabled) { background: var(--accent); color: #FFFFFF; }
+.screen { border-radius: 20px; overflow: hidden; box-shadow: 0 30px 60px -30px rgba(11,13,18,.45); }
+.frame { background: radial-gradient(circle at 1px 1px, #232A40 1.1px, transparent 1.5px) 0 0 / 16px 16px, #0F1220; }
+.snip { border: 0; border-radius: 20px; box-shadow: inset 0 0 0 1px #E3E6EB; overflow: hidden; }
+.copy-btn { border: 0; border-radius: 999px; box-shadow: inset 0 0 0 1px #D3D8E0; background: #FFFFFF; }
+.snip-head .tabs { gap: 2px; padding: 3px; border-radius: 999px; background: #EEF0F4; }
+.snip-head .tabs button { border: 0; border-radius: 999px; background: transparent; min-height: 32px; color: var(--ink-2); }
+.snip-head .tabs button[aria-selected="true"] { background: #FFFFFF; color: var(--ink); box-shadow: 0 1px 3px rgba(11,13,18,.14); }
+.head-row .pill { border-radius: 999px; }
+</style>
+</head>
+<body>
+<header class="topbar"><div class="container row">
+  <a class="brandmark" href="index.html" aria-label="Tokard home"><img src="assets/brand/tokard-mark.svg" alt=""><span>Tokard</span></a>
+  <nav class="toplinks" aria-label="Main">
+    <a data-page="shop" href="shop.html">Shop</a>
+    <a data-page="playground" href="playground.html">Playground</a>
+    <a data-page="studio" href="studio.html">Studio</a>
+    <a href="docs.html">Docs</a>
+  </nav>
+  <div class="topcta"><a class="vbtn primary sm" data-page="console" href="console.html">Wallet</a><button class="vbtn ghost sm menu-btn icon-btn" type="button" aria-expanded="false" aria-label="Menu"><svg class="mi" viewBox="0 0 24 24" aria-hidden="true"><path data-icon="menu" d="M4 7h16M4 12h16M4 17h16"/></svg></button></div>
+</div></header>
+<div class="wrap">
+
+
+
+<div class="head-row">
+  <h1>Playground</h1>
+  <p class="pill js-demo" hidden>Demo · sample outputs, not live calls</p>
+</div>
+
+<div class="grid">
+  <div class="controls">
+    <div class="step">
+      <p class="sr" id="jobLabel">What do you need?</p>
+      <div class="jobs" role="radiogroup" aria-labelledby="jobLabel" id="jobs">
+        <button type="button" class="job" role="radio" data-job="text" aria-checked="true"><img src="assets/brand/deepseek.svg" alt=""><b>Coding</b><small>DeepSeek V4.1 Flash</small></button>
+        <button type="button" class="job" role="radio" data-job="image" aria-checked="false"><img src="assets/brand/dreamina.png" alt=""><b>Design</b><small>Seedream 5.0 Pro</small></button>
+        <button type="button" class="job" role="radio" data-job="video" aria-checked="false"><img src="assets/brand/seed.png" alt=""><b>Film</b><small>Seedance 2.5</small></button>
+      </div>
+    </div>
+
+    <div class="step">
+      <label class="sr" for="prompt">Prompt</label>
+      <textarea id="prompt" class="prompt" rows="6"></textarea>
+      <div class="opts" id="imageOpts" hidden>
+        <div class="opt"><span>Shape</span><div class="seg" data-opt="ratio" data-for="image">
+          <button type="button" data-v="16:9" aria-pressed="true">16:9</button><button type="button" data-v="1:1" aria-pressed="false">1:1</button><button type="button" data-v="9:16" aria-pressed="false">9:16</button><button type="button" data-v="4:3" aria-pressed="false">4:3</button><button type="button" data-v="3:4" aria-pressed="false">3:4</button>
+        </div></div>
+      </div>
+      <div class="opts" id="videoOpts" hidden>
+        <div class="opt"><span>Length</span><div class="seg" data-opt="seconds">
+          <button type="button" data-v="5" aria-pressed="true">5 s</button><button type="button" data-v="10" aria-pressed="false">10 s</button>
+        </div></div>
+        <div class="opt"><span>Shape</span><div class="seg" data-opt="ratio" data-for="video">
+          <button type="button" data-v="16:9" aria-pressed="true">16:9</button><button type="button" data-v="9:16" aria-pressed="false">9:16</button><button type="button" data-v="1:1" aria-pressed="false">1:1</button>
+        </div></div>
+        <div class="opt"><span>Sound</span><div class="seg" data-opt="audio">
+          <button type="button" data-v="on" aria-pressed="true">On</button><button type="button" data-v="off" aria-pressed="false">Off</button>
+        </div></div>
+        <p class="hint">720p. $0.23 per second, so <b id="vidCost">$1.15</b> for this clip.</p>
+      </div>
+    </div>
+
+    <div class="step">
+      <p class="sr">Your key</p>
+      <div class="keyline" id="keyHave" hidden><span>Using</span><code id="keyMasked"></code><button type="button" id="keyChange">Change</button></div>
+      <div id="keyNeed" hidden>
+        <div class="keyform">
+          <label for="keyInput" class="sr">API key</label>
+          <input class="input" id="keyInput" type="password" autocomplete="off" spellcheck="false" placeholder="sk-...">
+          <button class="btn sm" type="button" id="keySave">Use key</button>
+        </div>
+        <p class="hint" style="margin-top:8px">No key yet? <a href="shop.html" style="color:var(--accent);font-weight:600">Get a card</a>.</p>
+      </div>
+    </div>
+
+    <button class="run" id="run" type="button">
+      <svg class="mi" viewBox="0 0 24 24" aria-hidden="true"><path id="runIcon" data-icon="play" d="M8 5v14l11-7z"/></svg>
+      <span id="runLabel">Run</span>
+    </button>
+  </div>
+
+  <div class="output">
+    <div class="screen">
+      <div class="bar">
+        <span class="st"><span class="dot" id="dot"></span><span id="status">Ready</span></span>
+        <span class="m" id="modelTag" hidden>model="text" → DeepSeek V4.1 Flash</span>
+      </div>
+      <div class="body" id="body" aria-live="polite"><p class="idle">Press Run to send this prompt.</p></div>
+      <dl class="metas" id="metas" hidden></dl>
+    </div>
+
+    <div class="snip">
+      <div class="snip-head">
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+          <div class="tabs" role="tablist" aria-label="Language" id="langTabs">
+            <button type="button" role="tab" aria-selected="true" data-lang="py">Python</button>
+            <button type="button" role="tab" aria-selected="false" data-lang="curl">curl</button>
+          </div>
+          <button class="copy-btn icon-btn" type="button" id="copy" aria-label="Copy"><svg class="mi" viewBox="0 0 24 24" aria-hidden="true"><path data-icon="copy" d="M9 9h11v11H9zM15 5V4H4v11h1"/></svg></button>
+        </div>
+      </div>
+      <pre id="snippet"></pre>
+    </div>
+  </div>
+</div>
+
+<footer class="site">
+  <div><a class="brandmark" href="index.html"><img src="assets/brand/tokard-mark.svg" alt=""><span>Tokard</span></a>
+  <small style="margin-top:10px">© 2026 Tokard. DeepSeek, Dreamina, Seedream, Seedance and ByteDance Seed are trademarks of their respective owners.</small></div>
+  <nav aria-label="Footer"><a href="shop.html">Shop</a><a href="console.html">Wallet</a><a href="studio.html">Studio</a><a href="docs.html">Docs</a><a href="odds.html">Odds and rules</a></nav>
+</footer>
+
+</div>
+<script src="assets/morph.js"></script>
+<script src="assets/site.js"></script>
+<script>
+(() => {
+  'use strict';
+  const CA = window.ChinaAPI;
+  const $ = (id) => document.getElementById(id);
+  const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const IMAGE_SIZES = { '1:1': '1536x1536', '16:9': '2048x1152', '9:16': '1152x2048', '4:3': '1760x1320', '3:4': '1320x1760' };
+  const DEFAULTS = {
+    text: 'Summarize this support ticket in one sentence and give it a priority:\n\n"Since 9am, EU customers can\'t finish card payments. The checkout page spins, then times out."',
+    image: 'A koi fish gliding over a neon city at night. Poster style, wide format.',
+    video: 'A koi fish swims through a neon city at night. Slow camera pan, soft synth soundtrack.',
+  };
+  const state = {
+    job: 'text', prompts: { ...DEFAULTS }, opts: { imageRatio: '16:9', videoRatio: '16:9', seconds: 5, audio: true },
+    key: '', running: false, lang: 'py', abort: null, objectUrl: '', cfg: null,
+  };
+
+  // ---------- controls ----------
+  function setJob(job) {
+    if (state.running) return;
+    state.prompts[state.job] = $('prompt').value;
+    state.job = job;
+    document.querySelectorAll('#jobs .job').forEach((b) => b.setAttribute('aria-checked', b.dataset.job === job ? 'true' : 'false'));
+    $('prompt').value = state.prompts[job];
+    $('imageOpts').hidden = job !== 'image';
+    $('videoOpts').hidden = job !== 'video';
+    $('modelTag').textContent = `model="${job}" → ${CA.MODELS[job].name}`;
+    resetOutput();
+    renderSnippet();
+  }
+  document.querySelectorAll('#jobs .job').forEach((b) => b.addEventListener('click', () => setJob(b.dataset.job)));
+  $('jobs').addEventListener('keydown', (e) => {
+    const order = ['text', 'image', 'video'];
+    const i = order.indexOf(state.job);
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') { e.preventDefault(); setJob(order[(i + 1) % 3]); document.querySelector(`#jobs [data-job=${state.job}]`).focus(); }
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { e.preventDefault(); setJob(order[(i + 2) % 3]); document.querySelector(`#jobs [data-job=${state.job}]`).focus(); }
+  });
+  document.querySelectorAll('.seg').forEach((seg) => seg.addEventListener('click', (e) => {
+    const b = e.target.closest('button');
+    if (!b || state.running) return;
+    seg.querySelectorAll('button').forEach((x) => x.setAttribute('aria-pressed', x === b ? 'true' : 'false'));
+    const o = seg.dataset.opt;
+    if (o === 'ratio') state.opts[seg.dataset.for === 'image' ? 'imageRatio' : 'videoRatio'] = b.dataset.v;
+    if (o === 'seconds') state.opts.seconds = +b.dataset.v;
+    if (o === 'audio') state.opts.audio = b.dataset.v === 'on';
+    $('vidCost').textContent = CA.usd(state.opts.seconds * CA.PRICES.videoSecond);
+    renderSnippet();
+  }));
+  $('prompt').addEventListener('input', () => { state.prompts[state.job] = $('prompt').value; renderSnippet(); });
+
+  // ---------- key ----------
+  function showKey() {
+    const k = state.key;
+    $('keyHave').hidden = !k;
+    $('keyNeed').hidden = !!k;
+    $('keyMasked').textContent = k ? k.slice(0, 5) + '••••' + k.slice(-4) : '';
+    renderSnippet();
+  }
+  $('keyChange').addEventListener('click', () => { $('keyHave').hidden = true; $('keyNeed').hidden = false; $('keyInput').value = ''; $('keyInput').focus(); });
+  $('keySave').addEventListener('click', saveKey);
+  $('keyInput').addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); saveKey(); } });
+  function saveKey() {
+    const k = $('keyInput').value.trim();
+    if (!k) { $('keyInput').focus(); return; }
+    state.key = k; CA.apiKey.set(k); showKey();
+  }
+
+  // ---------- output ----------
+  function setStatus(text, kind) {
+    $('status').textContent = text;
+    $('dot').className = 'dot' + (kind ? ' ' + kind : '');
+  }
+  function resetOutput() {
+    if (state.objectUrl) { URL.revokeObjectURL(state.objectUrl); state.objectUrl = ''; }
+    $('body').innerHTML = `<p class="idle">Press Run to ${state.job === 'text' ? 'send this prompt' : state.job === 'image' ? 'make this image' : 'make this video'}.</p>`;
+    $('metas').hidden = true;
+    setStatus('Ready');
+    $('runLabel').textContent = 'Run';
+  }
+  function showError(msg) {
+    $('body').innerHTML = `<p class="err">${esc(msg)}</p>`;
+    setStatus('Error', 'bad');
+  }
+  function showMetas(rows) {
+    $('metas').innerHTML = rows.map(([k, v]) => `<div><dt>${esc(k)}</dt><dd>${esc(v)}</dd></div>`).join('');
+    $('metas').hidden = false;
+  }
+  function stage(label) {
+    $('body').innerHTML = `<div class="stage"><div class="frame" id="frame" style="aspect-ratio:${aspect()}"><span class="wait">${esc(label)}</span></div><div class="prog"><div class="track"><div class="fill" id="fill"></div></div><span id="progText" style="min-width:150px;text-align:right">0%</span></div></div>`;
+  }
+  function aspect() {
+    const r = state.job === 'image' ? state.opts.imageRatio : state.opts.videoRatio;
+    return r.replace(':', ' / ');
+  }
+  function progress(p, text) {
+    const f = $('fill'); if (f) f.style.width = Math.round(p) + '%';
+    const t = $('progText'); if (t) t.textContent = text || Math.round(p) + '%';
+  }
+
+  // ---------- calls ----------
+  const demoMode = () => state.cfg && (state.cfg.serverless || state.cfg.demo);
+  const sleep = (ms, signal) => new Promise((resolve, reject) => {
+    const t = setTimeout(resolve, ms);
+    if (signal) signal.addEventListener('abort', () => { clearTimeout(t); reject(new DOMException('Aborted', 'AbortError')); }, { once: true });
+  });
+
+  async function apiFetch(path, init, signal) {
+    const headers = { Authorization: 'Bearer ' + state.key, ...(init.headers || {}) };
+    const r = await fetch('/v1' + path, { ...init, headers, signal });
+    if (!r.ok) {
+      let msg = `The API answered ${r.status}.`;
+      try { const d = await r.json(); msg = (d.error && (d.error.message || d.error)) || d.message || msg; } catch { /* keep */ }
+      if (r.status === 401) msg = 'This key was not accepted. Check it in the console.';
+      throw new Error(msg);
+    }
+    return r;
+  }
+
+  async function runText(signal) {
+    const prompt = $('prompt').value.trim();
+    $('body').innerHTML = '<pre id="out"></pre>';
+    const out = $('out');
+    const caret = document.createElement('span'); caret.className = 'caret';
+    out.appendChild(caret);
+    const t0 = performance.now();
+    let first = 0, text = '', usage = null;
+    const write = (s) => { text += s; caret.before(document.createTextNode(s)); };
+    setStatus('Streaming', 'run');
+    if (demoMode()) {
+      const reply = 'EU customers have been unable to complete card payments since 09:00 because the checkout page times out.\n\nPriority: P1 (revenue-impacting outage)';
+      await sleep(350, signal); first = performance.now();
+      for (let i = 0; i < reply.length; i += 4) { write(reply.slice(i, i + 4)); await sleep(18, signal); }
+      usage = { prompt_tokens: 58, completion_tokens: 31 };
+    } else {
+      const r = await apiFetch('/chat/completions', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ model: 'text', stream: true, stream_options: { include_usage: true }, messages: [{ role: 'user', content: prompt }] }),
+      }, signal);
+      const reader = r.body.getReader();
+      const dec = new TextDecoder();
+      let buf = '';
+      for (;;) {
+        const { value, done } = await reader.read();
+        if (done) break;
+        buf += dec.decode(value, { stream: true });
+        let i;
+        while ((i = buf.indexOf('\n')) >= 0) {
+          const line = buf.slice(0, i).trim(); buf = buf.slice(i + 1);
+          if (!line.startsWith('data:')) continue;
+          const data = line.slice(5).trim();
+          if (data === '[DONE]') continue;
+          try {
+            const j = JSON.parse(data);
+            const d = j.choices && j.choices[0] && j.choices[0].delta;
+            const piece = d && (d.content || '');
+            if (piece) { if (!first) first = performance.now(); write(piece); }
+            if (j.usage) usage = j.usage;
+          } catch { /* partial line */ }
+        }
+      }
+    }
+    caret.remove();
+    const total = (performance.now() - t0) / 1000;
+    setStatus('200 OK', 'ok');
+    const rows = [['Served by', CA.MODELS.text.name], ['First token', first ? ((first - t0) / 1000).toFixed(1) + ' s' : '—'], ['Total', total.toFixed(1) + ' s']];
+    if (usage) {
+      const cost = (usage.prompt_tokens || 0) * CA.PRICES.textIn / 1e6 + (usage.completion_tokens || 0) * CA.PRICES.textOut / 1e6;
+      rows.push(['Tokens', `${usage.prompt_tokens || 0} in · ${usage.completion_tokens || 0} out`], ['Cost', CA.usd(cost)]);
+    }
+    showMetas(rows);
+  }
+
+  async function runImage(signal) {
+    const prompt = $('prompt').value.trim();
+    const size = IMAGE_SIZES[state.opts.imageRatio];
+    stage('Creating image…');
+    setStatus('Generating', 'run');
+    const t0 = performance.now();
+    let p = 0;
+    const tick = setInterval(() => { p = Math.min(92, p + (92 - p) * 0.08 + 0.5); progress(p, 'Creating ' + Math.round(p) + '%'); }, 300);
+    let url;
+    try {
+      if (demoMode()) { await sleep(2400, signal); url = 'samples/koi.png'; }
+      else {
+        const r = await apiFetch('/images/generations', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ model: 'image', prompt, size, n: 1, response_format: 'url', watermark: false }),
+        }, signal);
+        const j = await r.json();
+        const d = j.data && j.data[0];
+        if (!d) throw new Error('No image came back. Try again.');
+        url = d.url || (d.b64_json ? 'data:image/png;base64,' + d.b64_json : '');
+      }
+    } finally { clearInterval(tick); }
+    progress(100, size.replace('x', ' × '));
+    $('frame').innerHTML = `<a href="${esc(url)}" target="_blank" rel="noopener"><img src="${esc(url)}" alt="${esc(prompt)}"></a>`;
+    setStatus('200 OK', 'ok');
+    showMetas([['Served by', CA.MODELS.image.name], ['Size', size.replace('x', ' × ')], ['Time', ((performance.now() - t0) / 1000).toFixed(1) + ' s'], ['Cost', CA.usd(CA.PRICES.image)]]);
+  }
+
+  async function runVideo(signal) {
+    const prompt = $('prompt').value.trim();
+    const { seconds, videoRatio: ratio, audio } = state.opts;
+    stage('Making video…');
+    setStatus('Generating', 'run');
+    const t0 = performance.now();
+    const expect = 60 + seconds * 8; // rough seconds to finish, only for the progress bar
+    const eased = () => { const e = (performance.now() - t0) / 1000; return Math.min(95, 100 * (1 - Math.exp(-e / (expect / 2.2)))); };
+    let src;
+    if (demoMode()) {
+      for (let i = 0; i < 16; i++) { await sleep(250, signal); progress(i * 6, 'Rendering ' + i * 6 + '%'); }
+      src = 'samples/koi.mp4';
+    } else {
+      const r = await apiFetch('/videos', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ model: 'video', prompt, seconds: String(seconds), metadata: { resolution: '720p', ratio, generate_audio: audio, watermark: false } }),
+      }, signal);
+      const task = await r.json();
+      const id = task.id || task.task_id;
+      if (!id) throw new Error('The video job did not start. Try again.');
+      for (;;) {
+        await sleep(4000, signal);
+        const s = await (await apiFetch('/videos/' + encodeURIComponent(id), { method: 'GET' }, signal)).json();
+        const st = String(s.status || '').toLowerCase();
+        const pr = typeof s.progress === 'number' && s.progress > 0 ? s.progress : eased();
+        progress(pr, (st === 'queued' ? 'Queued ' : 'Rendering ') + Math.round(pr) + '%');
+        if (['failed', 'failure', 'cancelled', 'canceled'].includes(st)) throw new Error((s.error && (s.error.message || s.error)) || 'The video could not be made. Try a different prompt.');
+        if (['completed', 'succeeded', 'success'].includes(st)) break;
+      }
+      progress(97, 'Downloading');
+      const blob = await (await apiFetch('/videos/' + encodeURIComponent(id) + '/content', { method: 'GET' }, signal)).blob();
+      state.objectUrl = URL.createObjectURL(blob);
+      src = state.objectUrl;
+    }
+    progress(100, `${seconds} s · 720p${audio ? ' · sound' : ''}`);
+    $('frame').innerHTML = `<video src="${esc(src)}" controls playsinline autoplay muted loop></video>`;
+    setStatus('200 OK', 'ok');
+    showMetas([['Served by', CA.MODELS.video.name], ['Length', `${seconds} s · 720p`], ['Sound', audio ? 'On' : 'Off'], ['Cost', CA.usd(seconds * CA.PRICES.videoSecond)]]);
+  }
+
+  $('run').addEventListener('click', async () => {
+    if (state.running) return;
+    if (!$('prompt').value.trim()) { $('prompt').focus(); return; }
+    if (!state.key && !demoMode()) { $('keyNeed').hidden = false; $('keyHave').hidden = true; $('keyInput').focus(); return; }
+    resetOutput();
+    state.running = true;
+    $('run').disabled = true;
+    $('runLabel').textContent = state.job === 'text' ? 'Running…' : state.job === 'image' ? 'Generating…' : 'Rendering…';
+    const icon = (n) => window.Morph && window.Morph.to($('runIcon'), n);
+    icon('busy');
+    const ctrl = new AbortController();
+    state.abort = ctrl;
+    try {
+      if (state.job === 'text') await runText(ctrl.signal);
+      else if (state.job === 'image') await runImage(ctrl.signal);
+      else await runVideo(ctrl.signal);
+      $('runLabel').textContent = 'Run again';
+      icon('check'); setTimeout(() => { if (!state.running) icon('play'); }, 1400);
+    } catch (err) {
+      if (err.name !== 'AbortError') showError(err.message || 'Something went wrong.');
+      $('runLabel').textContent = 'Run'; icon('play');
+    } finally {
+      state.running = false;
+      $('run').disabled = false;
+    }
+  });
+
+  // ---------- snippet ----------
+  function renderSnippet() {
+    const base = ((state.cfg && state.cfg.apiUrl) || 'https://api.tokard.ai').replace(/\/+$/, '') + '/v1';
+    const prompt = $('prompt').value.trim() || DEFAULTS[state.job];
+    const q = JSON.stringify(prompt);
+    const keyShown = 'sk-...';
+    let code;
+    if (state.lang === 'py') {
+      const head = `from openai import OpenAI\n\nclient = OpenAI(base_url="${base}", api_key="${keyShown}")\n\n`;
+      if (state.job === 'text') code = head + `reply = client.chat.completions.create(\n    model="text",\n    messages=[{"role": "user", "content": ${q}}],\n)\nprint(reply.choices[0].message.content)`;
+      else if (state.job === 'image') code = head + `img = client.images.generate(\n    model="image",\n    prompt=${q},\n    size="${IMAGE_SIZES[state.opts.imageRatio]}",\n)\nprint(img.data[0].url)`;
+      else code = head + `video = client.videos.create(\n    model="video",\n    prompt=${q},\n    seconds="${state.opts.seconds}",\n    extra_body={"metadata": {"resolution": "720p", "ratio": "${state.opts.videoRatio}", "generate_audio": ${state.opts.audio ? 'True' : 'False'}}},\n)\n# poll client.videos.retrieve(video.id), then download its content`;
+    } else {
+      const sh = (obj) => "'" + JSON.stringify(obj, null, 2).replace(/'/g, "'\\''") + "'";
+      const auth = ` \\\n  -H "Authorization: Bearer $CHINAAPI_KEY" \\\n  -H "Content-Type: application/json" \\\n  -d `;
+      if (state.job === 'text') code = `curl ${base}/chat/completions` + auth + sh({ model: 'text', messages: [{ role: 'user', content: prompt }] });
+      else if (state.job === 'image') code = `curl ${base}/images/generations` + auth + sh({ model: 'image', prompt, size: IMAGE_SIZES[state.opts.imageRatio] });
+      else code = `curl ${base}/videos` + auth + sh({ model: 'video', prompt, seconds: String(state.opts.seconds), metadata: { resolution: '720p', ratio: state.opts.videoRatio, generate_audio: state.opts.audio } }) + `\n\n# then: curl ${base}/videos/<id>  and  curl -o out.mp4 ${base}/videos/<id>/content`;
+    }
+    $('snippet').textContent = code;
+  }
+  document.querySelectorAll('#langTabs [role=tab]').forEach((b) => b.addEventListener('click', () => {
+    state.lang = b.dataset.lang;
+    document.querySelectorAll('#langTabs [role=tab]').forEach((x) => x.setAttribute('aria-selected', x === b ? 'true' : 'false'));
+    renderSnippet();
+  }));
+  $('copy').addEventListener('click', () => CA.copy($('snippet').textContent, $('copy')));
+
+  // ---------- boot ----------
+  (async () => {
+    $('prompt').value = state.prompts.text;
+    const params = new URLSearchParams(location.search);
+    state.cfg = await CA.ready;
+    state.key = await CA.apiKey.resolve();
+    showKey();
+    setJob(['text', 'image', 'video'].includes(params.get('model')) ? params.get('model') : 'text');
+  })();
+})();
+</script>
+</body>
+</html>

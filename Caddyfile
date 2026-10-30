@@ -1,0 +1,55 @@
+# HTTPS certificates are issued automatically once the three domains point at this server.
+{
+	servers {
+		# Caddy talks to the internet directly, so it ignores X-Forwarded-For from
+		# clients and sets it fresh. If you put Cloudflare in front, list its ranges
+		# here with trusted_proxies and set TRUST_PROXY_HOPS=2.
+		timeouts {
+			read_header 10s
+			idle 2m
+		}
+	}
+}
+
+(common) {
+	header {
+		-Server
+		Strict-Transport-Security "max-age=63072000; includeSubDomains; preload"
+	}
+}
+
+# Website: home, flip, shop, wallet, playground, Studio. Stripe's webhook also
+# lands here, at /api/stripe/webhook.
+{$SITE_DOMAIN} {
+	import common
+	encode gzip
+	request_body {
+		max_size 30MB
+	}
+	reverse_proxy web:8080 {
+		flush_interval -1
+	}
+}
+
+# Public API for developers: https://api.<domain>/v1/...
+{$API_DOMAIN} {
+	import common
+	request_body {
+		max_size 30MB
+	}
+	reverse_proxy web:8080 {
+		flush_interval -1
+	}
+}
+
+# Admin only: new-api's own console (channels, prices, logs). Customers never use
+# it, so it answers only to the addresses in ADMIN_ALLOW_IPS.
+{$ADMIN_DOMAIN} {
+	import common
+	@outsiders not remote_ip {$ADMIN_ALLOW_IPS}
+	respond @outsiders 404
+	encode gzip
+	reverse_proxy new-api:3000 {
+		flush_interval -1
+	}
+}

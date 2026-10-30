@@ -1,0 +1,14 @@
+{
+  "name": "tokard-web",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Tokard: cards, flips, shop, wallet and the public API edge in front of new-api",
+  "type": "module",
+  "engines": { "node": ">=22.5" },
+  "scripts": {
+    "start": "node server.mjs",
+    "demo": "MOCK=1 node server.mjs",
+    "mock-upstream": "node dev/mock-upstream.mjs",
+    "test:attack": "node --disable-warning=ExperimentalWarning test/attack.mjs"
+  }
+}

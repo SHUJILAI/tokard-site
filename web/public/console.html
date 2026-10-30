@@ -1,0 +1,715 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Console · ChinaAPI</title>
+<meta name="description" content="Your ChinaAPI key, credit and usage.">
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="icon" href="assets/brand/chinaapi-mark.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800&family=Geist+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="assets/site.css">
+<style>
+.head { padding: 48px 0 32px; display: flex; flex-direction: column; gap: 12px; }
+.head h1 { font-weight: 800; font-size: clamp(40px, 5vw, 60px); line-height: 1; letter-spacing: -0.04em; }
+.head p { font-size: 18px; color: var(--ink-2); max-width: 40em; }
+.cols { display: flex; flex-wrap: wrap; gap: 24px; align-items: flex-start; }
+.main-col { flex: 999 1 600px; min-width: 0; display: flex; flex-direction: column; gap: 20px; }
+.side-col { flex: 1 1 320px; min-width: 0; display: flex; flex-direction: column; gap: 20px; }
+
+.keyrow { display: flex; flex-wrap: wrap; gap: 10px; align-items: stretch; }
+.keyrow code { flex: 1 1 320px; min-width: 0; font-family: var(--f-mono); font-size: 16px; background: var(--code-bg); color: #FFFFFF; padding: 14px 16px; overflow-x: auto; white-space: nowrap; letter-spacing: .02em; }
+.keys { border-top: 1px solid var(--line-2); padding-top: 12px; }
+.keys summary { cursor: pointer; font-size: 14px; font-weight: 600; min-height: 32px; display: flex; align-items: center; }
+.keys ul { list-style: none; margin: 10px 0 0; padding: 0; display: flex; flex-direction: column; }
+.keys li { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; padding: 10px 0; border-top: 1px solid var(--line-2); font-size: 14px; }
+.keys li b { font-weight: 600; }
+.keys li code { font-family: var(--f-mono); font-size: 12.5px; color: var(--ink-2); }
+.keys li .sp { flex: 1; }
+.linkbtn { background: none; border: 0; padding: 0; color: var(--accent); font-weight: 600; min-height: 32px; font-size: 14px; }
+.linkbtn.danger { color: var(--bad); }
+.newkey { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+.newkey .input { flex: 1 1 200px; min-height: 40px; }
+
+.usage { display: flex; flex-direction: column; gap: 14px; }
+.urow { display: grid; grid-template-columns: 64px minmax(0, 1fr) auto 72px; gap: 12px; align-items: center; white-space: nowrap; }
+.urow .t { font-size: 15px; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; }
+.urow .track { height: 14px; background: var(--bg); }
+.urow .fill { height: 14px; background: var(--accent); }
+.urow .a { font-family: var(--f-mono); font-size: 13px; color: var(--ink-2); text-align: right; }
+.urow .c { font-family: var(--f-mono); font-size: 14px; font-weight: 600; text-align: right; }
+.total { display: flex; justify-content: space-between; align-items: center; border-top: 1.5px solid var(--ink); padding-top: 14px; font-size: 15px; }
+.total b { font-family: var(--f-mono); font-size: 18px; }
+@media (max-width: 480px) { .urow { grid-template-columns: 78px minmax(0, 1fr) 64px; } .urow .a { display: none; } }
+
+.calls { width: 100%; border-collapse: collapse; font-size: 14px; }
+.calls th { text-align: left; font-size: 12px; font-weight: 500; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; padding: 0 8px 8px 0; }
+.calls td { padding: 10px 8px 10px 0; border-top: 1px solid var(--line-2); vertical-align: top; }
+.calls td.r, .calls th.r { text-align: right; padding-right: 0; }
+.calls .mdl { display: inline-flex; align-items: center; gap: 8px; font-weight: 600; }
+.calls img, .urow img, .mlist img { width: 20px; height: 20px; object-fit: contain; border-radius: 4px; }
+.empty { font-size: 14.5px; color: var(--muted); padding: 6px 0; }
+
+.credit { background: var(--code-bg); color: #FFFFFF; padding: 24px; display: flex; flex-direction: column; gap: 10px; }
+.credit h2 { font-family: var(--f-mono); font-size: 12.5px; font-weight: 500; letter-spacing: .1em; text-transform: uppercase; color: #A3AABA; }
+.credit .bal { font-size: 52px; font-weight: 700; letter-spacing: -0.03em; line-height: 1; }
+.credit .sub { font-size: 14px; color: #C9CEDA; }
+.credit .acts { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 6px; }
+.credit .acts button { min-height: 44px; padding: 0 16px; font-weight: 600; border: 1.5px solid #FFFFFF; background: transparent; color: #FFFFFF; }
+.credit .acts button.fill { background: var(--accent); border-color: var(--accent); }
+.credit .acts button:hover { background: #FFFFFF; color: #0B0D12; border-color: #FFFFFF; }
+.credit form { display: flex; flex-direction: column; gap: 10px; border-top: 1px solid #222734; padding-top: 14px; margin-top: 4px; }
+.credit .chips { display: flex; gap: 6px; flex-wrap: wrap; }
+.credit .chips button { font-family: var(--f-mono); min-height: 38px; padding: 0 12px; background: transparent; border: 1px solid #343A4A; color: #FFFFFF; }
+.credit .chips button[aria-pressed="true"] { background: #FFFFFF; color: #0B0D12; border-color: #FFFFFF; }
+.credit input { min-height: 42px; background: #14171E; border: 1px solid #343A4A; color: #FFFFFF; padding: 8px 10px; font-family: var(--f-mono); }
+.credit .go { min-height: 44px; border: 0; background: var(--accent); color: #FFFFFF; font-weight: 600; }
+.credit .msg { color: #C9CEDA; }
+.credit .msg.bad { color: #FFB4B4; }
+.credit .msg.ok { color: #8FE3B4; }
+
+.plan { border-top: 1px solid var(--line-2); padding: 14px 0 4px; display: flex; flex-direction: column; gap: 8px; }
+.plan:first-of-type { border-top: 0; padding-top: 0; }
+.plan .pt { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+.plan .pt b { font-size: 16px; }
+.plan .pt span { font-family: var(--f-mono); font-size: 15px; }
+.plan p { font-size: 13.5px; color: var(--ink-2); }
+.plan .cur { font-size: 13px; color: var(--ok); font-weight: 600; }
+
+.check { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; font-size: 14.5px; }
+.check li { display: flex; align-items: center; gap: 12px; }
+.check .box { width: 16px; height: 16px; flex: none; border: 2px solid var(--muted); }
+.check li.done .box { border-color: var(--accent); background: var(--accent); }
+.check li.done span:last-child { color: var(--muted); text-decoration: line-through; }
+.mlist { display: flex; flex-direction: column; }
+.mlist div { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 10px 0; border-top: 1px solid var(--line-2); }
+.mlist div:first-child { border-top: 0; }
+.mlist .k { font-family: var(--f-mono); font-size: 15px; font-weight: 600; display: inline-flex; gap: 8px; align-items: center; }
+.mlist .n { font-size: 13px; color: var(--ink-2); text-align: right; }
+.mlist code { font-family: var(--f-mono); font-size: 11.5px; color: var(--muted); }
+
+.auth { display: flex; flex-wrap: wrap; gap: 24px; align-items: flex-start; }
+.auth .card.hero { flex: 1 1 420px; max-width: 560px; }
+.auth form { display: flex; flex-direction: column; gap: 14px; }
+.auth .row2 { display: flex; gap: 8px; align-items: flex-end; }
+.auth .row2 .field { flex: 1; }
+.auth aside { flex: 1 1 300px; display: flex; flex-direction: column; gap: 14px; }
+.who { display: inline-flex; align-items: center; gap: 8px; font-size: 14px; color: var(--ink-2); }
+.who .av { width: 28px; height: 28px; background: var(--ink); color: var(--bg); display: inline-grid; place-items: center; font-size: 13px; font-weight: 700; text-transform: uppercase; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="nav">
+  <a class="logo" href="index.html" aria-label="ChinaAPI home"><img src="assets/brand/chinaapi-mark.svg" alt=""><span style="color:inherit">China<span>API</span></span></a>
+  <nav class="links" aria-label="Main">
+    <a class="hide-sm" href="index.html#models">Models</a>
+    <a data-page="pricing" href="pricing.html">Pricing</a>
+    <a data-page="playground" href="playground.html">Playground</a>
+    <a data-page="studio" href="studio.html">Studio</a>
+    <a class="hide-sm" href="index.html#docs">Docs</a>
+    <a class="btn primary js-account" data-page="console" href="console.html">Get API key</a>
+  </nav>
+</header>
+
+<p class="pill js-demo" hidden style="margin-top:24px">Demo · sample account and data</p>
+
+<!-- Signed out -->
+<section id="authView" hidden>
+  <div class="head">
+    <h1 id="authTitle">Get your API key.</h1>
+    <p>One account for text, image and video. $5 of free credit to start, no card needed.</p>
+  </div>
+  <div class="auth">
+    <div class="card hero">
+      <div class="tabs" role="tablist" aria-label="Account">
+        <button type="button" role="tab" id="tabRegister" aria-selected="true">Create account</button>
+        <button type="button" role="tab" id="tabLogin" aria-selected="false">Sign in</button>
+      </div>
+      <form id="authForm" novalidate>
+        <div class="field">
+          <label for="fUser" id="fUserLabel">Username</label>
+          <input class="input" id="fUser" autocomplete="username" maxlength="50" required>
+        </div>
+        <div class="field" id="emailField" hidden>
+          <label for="fEmail">Email</label>
+          <div class="row2">
+            <input class="input" id="fEmail" type="email" autocomplete="email" maxlength="50">
+            <button class="btn sm" type="button" id="sendCode">Send code</button>
+          </div>
+        </div>
+        <div class="field" id="codeField" hidden>
+          <label for="fCode">Code from the email</label>
+          <input class="input" id="fCode" inputmode="numeric" autocomplete="one-time-code">
+        </div>
+        <div class="field">
+          <label for="fPass">Password</label>
+          <input class="input" id="fPass" type="password" autocomplete="new-password" minlength="8" maxlength="128" required>
+          <span class="hint" id="passHint">At least 8 characters.</span>
+        </div>
+        <div id="turnstile"></div>
+        <div class="msg" id="authMsg" role="status"></div>
+        <button class="btn primary" type="submit" id="authSubmit">Create account</button>
+      </form>
+    </div>
+    <aside>
+      <div class="card">
+        <h2>What you get</h2>
+        <div class="mlist" id="authModels"></div>
+      </div>
+      <p class="hint">Prompts and outputs are processed outside China and are not used for training.</p>
+    </aside>
+  </div>
+</section>
+
+<!-- Signed in -->
+<section id="appView" hidden>
+  <div class="head">
+    <h1 id="hello">Your key is ready.</h1>
+    <p id="helloSub">Copy it, change one URL, and you're live.</p>
+  </div>
+  <div class="cols">
+    <div class="main-col">
+
+      <section class="card hero" aria-labelledby="key-h">
+        <div class="card-row"><h2 id="key-h">API key</h2><span class="hint" id="keyMeta"></span></div>
+        <div class="keyrow">
+          <code id="keyShown">sk-••••••••••••••••••••</code>
+          <button class="btn" type="button" id="reveal" style="min-height:48px">Reveal</button>
+          <button class="btn primary" type="button" id="copyKey" style="min-height:48px">Copy key</button>
+        </div>
+        <p class="hint">Treat it like a password: it can spend your credit. Studio and Playground in this browser use it once you reveal or copy it.</p>
+        <details class="keys" id="keysBox">
+          <summary id="keysSummary">All keys</summary>
+          <ul id="keyList"></ul>
+          <form class="newkey" id="newKeyForm">
+            <label for="newKeyName" class="sr">New key name</label>
+            <input class="input" id="newKeyName" placeholder="Name, e.g. production" maxlength="40">
+            <button class="btn sm" type="submit">New key</button>
+          </form>
+          <div class="msg" id="keysMsg" role="status"></div>
+        </details>
+      </section>
+
+      <section class="card" aria-labelledby="first-h">
+        <div class="card-row">
+          <h2 id="first-h">Make your first call</h2>
+          <div class="tabs" role="tablist" aria-label="Model" id="snipTabs">
+            <button type="button" role="tab" aria-selected="true" data-job="text">Text</button>
+            <button type="button" role="tab" aria-selected="false" data-job="image">Image</button>
+            <button type="button" role="tab" aria-selected="false" data-job="video">Video</button>
+          </div>
+        </div>
+        <div class="code-block"><pre id="snippet"></pre></div>
+        <div class="card-row" style="align-items:center">
+          <span style="font-size:13.5px;color:var(--ink-2)">Paste into a terminal, or <a href="playground.html" style="color:var(--accent);font-weight:600">try it in the Playground</a>.</span>
+          <button class="btn sm" type="button" id="copySnip" style="font-family:var(--f-mono);font-size:13px">Copy</button>
+        </div>
+      </section>
+
+      <section class="card" aria-labelledby="usage-h">
+        <div class="card-row"><h2 id="usage-h">This month</h2><span class="hint">Updates every few minutes</span></div>
+        <div class="usage" id="usage"></div>
+        <div class="total"><span>Total, one line per model</span><b id="usageTotal">$0.00</b></div>
+      </section>
+
+      <section class="card" aria-labelledby="calls-h">
+        <div class="card-row"><h2 id="calls-h">Recent calls</h2><button class="linkbtn" type="button" id="reloadCalls">Refresh</button></div>
+        <div style="overflow-x:auto"><table class="calls"><thead><tr><th>When</th><th>Model</th><th>Detail</th><th class="r">Cost</th></tr></thead><tbody id="calls"></tbody></table></div>
+        <p class="empty" id="callsEmpty" hidden>No calls yet. Run the snippet above and it shows up here.</p>
+      </section>
+    </div>
+
+    <aside class="side-col">
+      <section class="credit" aria-labelledby="credit-h">
+        <h2 id="credit-h">Credit</h2>
+        <p class="bal" id="balance" style="font-variant-numeric:tabular-nums">$0.00</p>
+        <p class="sub" id="balanceSub"></p>
+        <p class="sub" id="fundsSoon" hidden>Card top-ups open soon.</p>
+        <div class="acts">
+          <button type="button" class="fill" id="openFunds">Add funds</button>
+          <button type="button" id="openRedeem">Redeem code</button>
+        </div>
+        <form id="fundsForm" hidden>
+          <div class="chips" id="amountChips"></div>
+          <label for="amountInput" class="sr">Amount in US dollars</label>
+          <input id="amountInput" inputmode="decimal" placeholder="Other amount, $">
+          <button class="go" type="submit">Continue to payment</button>
+          <p class="msg" id="fundsMsg" role="status"></p>
+        </form>
+        <form id="redeemForm" hidden>
+          <label for="redeemInput" class="sr">Code</label>
+          <input id="redeemInput" placeholder="Code" autocomplete="off">
+          <button class="go" type="submit">Redeem</button>
+          <p class="msg" id="redeemMsg" role="status"></p>
+        </form>
+      </section>
+
+      <section class="card" id="plans" aria-labelledby="plans-h" hidden>
+        <div class="card-row"><h2 id="plans-h">Plans</h2><a class="hint" href="pricing.html#plans">Compare</a></div>
+        <div id="planList"></div>
+        <p class="msg" id="planMsg" role="status"></p>
+      </section>
+
+      <section class="card" aria-labelledby="check-h">
+        <h2 id="check-h">Get started</h2>
+        <ul class="check" id="checklist"></ul>
+      </section>
+
+      <section class="card" aria-labelledby="models-h">
+        <h2 id="models-h">Your models</h2>
+        <div class="mlist" id="modelList"></div>
+        <p class="hint">Always the newest version. To freeze one, use a dated name like <code class="mono">text@2026-10</code>.</p>
+      </section>
+
+      <section class="card" aria-labelledby="data-h">
+        <h2 id="data-h">Your data</h2>
+        <p style="font-size:14px;line-height:1.55;color:var(--ink-2)">Processed outside China. Prompts and outputs are not stored or used for training.</p>
+      </section>
+
+      <div class="card-row" style="padding:0 2px">
+        <span class="who"><span class="av" id="avatar">?</span><span id="whoName"></span></span>
+        <button class="linkbtn" type="button" id="signOut">Sign out</button>
+      </div>
+    </aside>
+  </div>
+</section>
+
+<footer class="site">
+  <div><span style="display:inline-flex;align-items:center;gap:8px"><img src="assets/brand/chinaapi-mark.svg" alt="" width="16" height="16" style="image-rendering:pixelated">© 2026 ChinaAPI</span>
+  <small>DeepSeek, Dreamina, Seedream, Seedance and ByteDance Seed are trademarks of their respective owners. Accounts and billing run on <a href="https://github.com/QuantumNous/new-api" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline">New API</a> (AGPL-3.0).</small></div>
+  <nav aria-label="Footer"><a href="pricing.html">Pricing</a><a href="playground.html">Playground</a><a href="studio.html">Studio</a><a href="index.html#docs">Docs</a></nav>
+</footer>
+
+</div>
+<script src="assets/site.js"></script>
+<script>
+(() => {
+  'use strict';
+  const CA = window.ChinaAPI;
+  const $ = (id) => document.getElementById(id);
+  const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const S = {
+    cfg: null, status: null, qpu: 500000, mode: 'register', turnstileToken: '', turnstileId: null,
+    user: null, tokens: [], primary: null, fullKey: '', revealed: false, snipJob: 'text', justCreated: false,
+    topup: null, amount: 20, plans: [], subs: [], hadTopup: false,
+  };
+  const money = (quota) => CA.usd((quota || 0) / S.qpu);
+  const ago = (ts) => {
+    const s = Math.max(0, Math.floor(Date.now() / 1000) - ts);
+    if (s < 60) return 'just now';
+    if (s < 3600) return Math.floor(s / 60) + ' min ago';
+    if (s < 86400) return Math.floor(s / 3600) + ' h ago';
+    return new Date(ts * 1000).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  };
+  const items = (r) => (Array.isArray(r) ? r : (r && (r.items || r.data)) || []);
+  const modelKey = (name) => (['text', 'image', 'video'].includes(String(name).split('@')[0]) ? String(name).split('@')[0] : null);
+
+  function msg(id, text, kind) { const el = $(id); el.textContent = text || ''; el.className = 'msg' + (kind ? ' ' + kind : ''); }
+
+  // ---------- auth ----------
+  function setMode(mode) {
+    S.mode = mode;
+    $('tabRegister').setAttribute('aria-selected', mode === 'register' ? 'true' : 'false');
+    $('tabLogin').setAttribute('aria-selected', mode === 'login' ? 'true' : 'false');
+    const reg = mode === 'register';
+    $('authTitle').textContent = reg ? 'Get your API key.' : 'Welcome back.';
+    $('authSubmit').textContent = reg ? 'Create account' : 'Sign in';
+    $('fUserLabel').textContent = reg ? 'Username' : 'Username or email';
+    $('fUser').maxLength = reg ? 20 : 50;
+    $('fPass').autocomplete = reg ? 'new-password' : 'current-password';
+    $('passHint').hidden = !reg;
+    const needEmail = reg && S.status && S.status.email_verification;
+    $('emailField').hidden = !needEmail;
+    $('codeField').hidden = !needEmail;
+    msg('authMsg', '');
+  }
+  $('tabRegister').addEventListener('click', () => setMode('register'));
+  $('tabLogin').addEventListener('click', () => setMode('login'));
+
+  function loadTurnstile() {
+    if (!S.status || !S.status.turnstile_check || !S.status.turnstile_site_key) return;
+    window.onChinaApiTurnstile = () => {
+      S.turnstileId = window.turnstile.render('#turnstile', { sitekey: S.status.turnstile_site_key, callback: (t) => { S.turnstileToken = t; } });
+    };
+    const s = document.createElement('script');
+    s.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?onload=onChinaApiTurnstile&render=explicit';
+    s.async = true;
+    document.head.appendChild(s);
+  }
+  function withTurnstile(path) {
+    if (!S.status || !S.status.turnstile_check) return path;
+    return path + (path.includes('?') ? '&' : '?') + 'turnstile=' + encodeURIComponent(S.turnstileToken || '');
+  }
+  function resetTurnstile() { S.turnstileToken = ''; if (window.turnstile && S.turnstileId !== null) try { window.turnstile.reset(S.turnstileId); } catch { /* ignore */ } }
+
+  async function encryptPassword(password) {
+    const k = await CA.account('GET', '/api/user/login/encryption-key', undefined, { anonymous: true });
+    if (!k || !k.enabled) return null;
+    const pem = String(k.public_key).replace(/-----[^-]+-----/g, '').replace(/\s+/g, '');
+    const der = Uint8Array.from(atob(pem), (c) => c.charCodeAt(0));
+    const key = await crypto.subtle.importKey('spki', der, { name: 'RSA-OAEP', hash: 'SHA-256' }, false, ['encrypt']);
+    const ct = new Uint8Array(await crypto.subtle.encrypt({ name: 'RSA-OAEP' }, key, new TextEncoder().encode(password)));
+    let bin = ''; ct.forEach((b) => { bin += String.fromCharCode(b); });
+    return { password_encrypted: btoa(bin), encryption_key_id: k.kid };
+  }
+
+  async function login(username, password) {
+    let body = { username, password };
+    if (S.status && S.status.password_login_encryption_enabled) {
+      const enc = await encryptPassword(password);
+      if (enc) body = { username, ...enc };
+    }
+    const data = await CA.account('POST', withTurnstile('/api/user/login'), body, { anonymous: true });
+    if (!data || !data.access_token) throw new Error('This account needs another sign-in step that the console does not support yet. Ask support for help.');
+    CA.session.fromLogin(data);
+  }
+
+  $('sendCode').addEventListener('click', async () => {
+    const email = $('fEmail').value.trim();
+    if (!/^\S+@\S+\.\S+$/.test(email)) { msg('authMsg', 'Enter your email first.', 'bad'); $('fEmail').focus(); return; }
+    $('sendCode').disabled = true;
+    try {
+      await CA.account('GET', withTurnstile('/api/verification?email=' + encodeURIComponent(email)), undefined, { anonymous: true });
+      msg('authMsg', 'Code sent. Check your inbox.', 'ok');
+      $('fCode').focus();
+    } catch (e) { msg('authMsg', e.message, 'bad'); }
+    finally { resetTurnstile(); setTimeout(() => { $('sendCode').disabled = false; }, 30000); }
+  });
+
+  $('authForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const username = $('fUser').value.trim();
+    const password = $('fPass').value;
+    if (!username) { msg('authMsg', 'Enter a username.', 'bad'); $('fUser').focus(); return; }
+    if (S.mode === 'register' && password.length < 8) { msg('authMsg', 'Use at least 8 characters for the password.', 'bad'); $('fPass').focus(); return; }
+    if (!password) { msg('authMsg', 'Enter your password.', 'bad'); $('fPass').focus(); return; }
+    if (S.status && S.status.turnstile_check && !S.turnstileToken) { msg('authMsg', 'Complete the check above first.', 'bad'); return; }
+    $('authSubmit').disabled = true;
+    msg('authMsg', S.mode === 'register' ? 'Creating your account…' : 'Signing in…');
+    try {
+      if (S.mode === 'register') {
+        const body = { username, password };
+        if (S.status && S.status.email_verification) { body.email = $('fEmail').value.trim(); body.verification_code = $('fCode').value.trim(); }
+        const aff = new URLSearchParams(location.search).get('aff');
+        if (aff) body.aff_code = aff;
+        await CA.account('POST', withTurnstile('/api/user/register'), body, { anonymous: true });
+        resetTurnstile();
+        if (S.status && S.status.turnstile_check) {
+          // The check is single-use; ask for a fresh one before signing in.
+          msg('authMsg', 'Account created. Complete the check again, then sign in.', 'ok');
+          setMode('login'); $('fUser').value = username; $('fPass').value = password;
+          return;
+        }
+        S.justCreated = true;
+      }
+      await login(username, password);
+      $('fPass').value = '';
+      await showApp();
+    } catch (err) {
+      msg('authMsg', err.message || 'That did not work. Try again.', 'bad');
+    } finally {
+      resetTurnstile();
+      $('authSubmit').disabled = false;
+    }
+  });
+
+  $('signOut').addEventListener('click', async () => {
+    try { await CA.account('POST', '/api/user/auth/logout'); } catch { /* signed out anyway */ }
+    CA.session.clear();
+    S.fullKey = ''; S.revealed = false;
+    showAuth('login');
+  });
+
+  // ---------- views ----------
+  function renderModelList(el) {
+    el.innerHTML = ['text', 'image', 'video'].map((k) => `<div><span class="k"><img src="${CA.MODELS[k].logo}" alt="">${k}</span><span class="n">${esc(CA.MODELS[k].name)}<br><code>${esc(CA.MODELS[k].price)}</code></span></div>`).join('');
+  }
+  function showAuth(mode) {
+    $('appView').hidden = true;
+    $('authView').hidden = false;
+    document.querySelectorAll('.js-account').forEach((a) => { a.textContent = 'Get API key'; });
+    setMode(mode || 'register');
+    renderModelList($('authModels'));
+    loadTurnstile();
+  }
+
+  async function showApp() {
+    $('authView').hidden = true;
+    $('appView').hidden = false;
+    document.querySelectorAll('.js-account').forEach((a) => { a.textContent = 'Console'; });
+    renderModelList($('modelList'));
+    renderSnippet();
+    await loadUser();
+    await loadKeys();
+    renderHello();
+    loadUsage(); loadCalls(); loadFunds(); loadPlans();
+    if (location.hash === '#plans') setTimeout(() => { const p = $('plans'); if (!p.hidden) p.scrollIntoView({ behavior: 'smooth' }); }, 300);
+    const params = new URLSearchParams(location.search);
+    if (params.get('paid')) msg('fundsMsg', 'Thanks. Your payment is being confirmed; the balance updates in a minute.', 'ok');
+  }
+
+  async function loadUser() {
+    const u = await CA.account('GET', '/api/user/self');
+    S.user = u;
+    $('balance').textContent = money(u.quota);
+    $('balanceSub').textContent = `Used ${money(u.used_quota)} so far · ${u.request_count || 0} calls`;
+    const name = u.display_name || u.username || '';
+    $('whoName').textContent = name;
+    $('avatar').textContent = (name || '?').slice(0, 1);
+    renderChecklist();
+  }
+
+  function renderHello() {
+    const credit = S.user ? money(S.user.quota) : '';
+    if (S.justCreated) {
+      $('hello').textContent = 'Your key is ready.';
+      $('helloSub').textContent = `Copy it, change one URL, and you're live. ${credit} of free credit is already on your account.`;
+    } else {
+      const name = S.user && (S.user.display_name || S.user.username);
+      $('hello').textContent = name ? `Welcome back, ${name}.` : 'Welcome back.';
+      $('helloSub').textContent = `You have ${credit} of credit. Copy your key, change one URL, and you're live.`;
+    }
+  }
+
+  // ---------- keys ----------
+  async function loadKeys() {
+    let list = items(await CA.account('GET', '/api/token/?p=1&size=50'));
+    if (!list.length) {
+      await CA.account('POST', '/api/token/', { name: 'Default key', remain_quota: 0, unlimited_quota: true, expired_time: -1 });
+      S.justCreated = true;
+      list = items(await CA.account('GET', '/api/token/?p=1&size=50'));
+    }
+    S.tokens = list;
+    const prev = S.primary && S.primary.id;
+    S.primary = list.find((t) => t.id === prev) || list.find((t) => t.status === 1) || list[0] || null;
+    if (!S.primary || S.primary.id !== prev) { S.fullKey = ''; S.revealed = false; }
+    renderKey();
+    renderKeyList();
+  }
+  function masked() {
+    if (!S.primary) return 'No key';
+    const tail = S.fullKey ? S.fullKey.slice(-4) : String(S.primary.key || '').slice(-4);
+    return 'sk-' + '•'.repeat(20) + tail;
+  }
+  function renderKey() {
+    $('keyShown').textContent = S.revealed && S.fullKey ? S.fullKey : masked();
+    $('reveal').textContent = S.revealed ? 'Hide' : 'Reveal';
+    $('keyMeta').textContent = S.primary ? `${S.primary.name} · created ${ago(S.primary.created_time)}` : '';
+    $('keysSummary').textContent = `All keys (${S.tokens.length})`;
+    renderSnippet();
+  }
+  async function fullKey(token) {
+    const r = await CA.account('POST', `/api/token/${token.id}/key`);
+    return 'sk-' + String((r && r.key) || r).replace(/^sk-/, '');
+  }
+  async function ensureFull() {
+    if (!S.fullKey && S.primary) {
+      S.fullKey = await fullKey(S.primary);
+      CA.apiKey.set(S.fullKey);
+    }
+    return S.fullKey;
+  }
+  $('reveal').addEventListener('click', async () => {
+    try {
+      if (!S.revealed) await ensureFull();
+      S.revealed = !S.revealed; renderKey(); renderChecklist();
+    } catch (e) { msg('keysMsg', e.message, 'bad'); $('keysBox').open = true; }
+  });
+  $('copyKey').addEventListener('click', async () => {
+    try { CA.copy(await ensureFull(), $('copyKey'), 'Copy key'); renderChecklist(); } catch (e) { msg('keysMsg', e.message, 'bad'); $('keysBox').open = true; }
+  });
+  function renderKeyList() {
+    $('keyList').innerHTML = S.tokens.map((t) => `<li data-id="${t.id}"><b>${esc(t.name)}</b><code>sk-••••${esc(String(t.key || '').slice(-4))}</code><span class="hint">${t.status === 1 ? 'active' : 'off'} · used ${money(t.used_quota)}</span><span class="sp"></span>${S.primary && t.id === S.primary.id ? '<span class="hint">shown above</span>' : `<button class="linkbtn" type="button" data-act="use">Show above</button>`}<button class="linkbtn danger" type="button" data-act="del">Delete</button></li>`).join('');
+  }
+  $('keyList').addEventListener('click', async (e) => {
+    const b = e.target.closest('button'); if (!b) return;
+    const id = +b.closest('li').dataset.id;
+    const t = S.tokens.find((x) => x.id === id); if (!t) return;
+    if (b.dataset.act === 'use') { S.primary = t; S.fullKey = ''; S.revealed = false; renderKey(); renderKeyList(); return; }
+    if (b.dataset.act === 'del') {
+      if (b.dataset.confirm !== '1') { b.dataset.confirm = '1'; b.textContent = 'Delete for good?'; setTimeout(() => { b.dataset.confirm = ''; b.textContent = 'Delete'; }, 4000); return; }
+      try {
+        await CA.account('DELETE', `/api/token/${id}`);
+        if (S.primary && S.primary.id === id && S.fullKey && CA.apiKey.get() === S.fullKey) CA.apiKey.clear();
+        await loadKeys(); msg('keysMsg', 'Key deleted. Apps using it stop working now.', 'ok');
+      } catch (err) { msg('keysMsg', err.message, 'bad'); }
+    }
+  });
+  $('newKeyForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const name = $('newKeyName').value.trim() || 'Key ' + (S.tokens.length + 1);
+    try {
+      await CA.account('POST', '/api/token/', { name, remain_quota: 0, unlimited_quota: true, expired_time: -1 });
+      $('newKeyName').value = '';
+      await loadKeys();
+      msg('keysMsg', `Created "${name}".`, 'ok');
+    } catch (err) { msg('keysMsg', err.message, 'bad'); }
+  });
+
+  // ---------- snippet ----------
+  function renderSnippet() {
+    const base = ((S.cfg && S.cfg.apiUrl) || 'https://api.chinaapi.ai').replace(/\/+$/, '') + '/v1';
+    const key = S.revealed && S.fullKey ? S.fullKey : '$CHINAAPI_KEY';
+    const auth = ` \\\n  -H "Authorization: Bearer ${key}" \\\n  -H "Content-Type: application/json" \\\n  -d `;
+    let code;
+    if (S.snipJob === 'image') code = `curl ${base}/images/generations` + auth + `'{"model": "image", "prompt": "A koi fish over a neon city", "size": "2048x1152"}'`;
+    else if (S.snipJob === 'video') code = `curl ${base}/videos` + auth + `'{"model": "video", "prompt": "A koi fish in a neon city", "seconds": "5", "metadata": {"resolution": "720p", "ratio": "16:9"}}'`;
+    else code = `curl ${base}/chat/completions` + auth + `'{"model": "text", "messages": [{"role": "user", "content": "Say hi in five languages"}]}'`;
+    $('snippet').textContent = code;
+  }
+  document.querySelectorAll('#snipTabs [role=tab]').forEach((b) => b.addEventListener('click', () => {
+    S.snipJob = b.dataset.job;
+    document.querySelectorAll('#snipTabs [role=tab]').forEach((x) => x.setAttribute('aria-selected', x === b ? 'true' : 'false'));
+    renderSnippet();
+  }));
+  $('copySnip').addEventListener('click', () => CA.copy($('snippet').textContent, $('copySnip')));
+
+  // ---------- usage ----------
+  async function loadUsage() {
+    const start = new Date(); start.setDate(1); start.setHours(0, 0, 0, 0);
+    let rows = [];
+    try { rows = await CA.account('GET', `/api/data/self?start_timestamp=${Math.floor(start / 1000)}&end_timestamp=${Math.floor(Date.now() / 1000)}`) || []; } catch { rows = []; }
+    const by = { text: { quota: 0, tokens: 0, count: 0 }, image: { quota: 0, tokens: 0, count: 0 }, video: { quota: 0, tokens: 0, count: 0 } };
+    for (const r of rows) {
+      const k = modelKey(r.model_name); if (!k) continue;
+      by[k].quota += r.quota || 0; by[k].tokens += r.token_used || 0; by[k].count += r.count || 0;
+    }
+    const max = Math.max(...Object.values(by).map((v) => v.quota), 1);
+    const amount = (k, v) => k === 'text' ? fmtTokens(v.tokens) + ' tokens' : k === 'image' ? `${v.count} image${v.count === 1 ? '' : 's'}` : `${v.count} clip${v.count === 1 ? '' : 's'}`;
+    $('usage').innerHTML = ['text', 'image', 'video'].map((k) => `<div class="urow"><span class="t"><img src="${CA.MODELS[k].logo}" alt="">${CA.MODELS[k].label}</span><div class="track"><div class="fill" style="width:${Math.round(by[k].quota / max * 100)}%"></div></div><span class="a">${amount(k, by[k])}</span><span class="c">${money(by[k].quota)}</span></div>`).join('');
+    $('usageTotal').textContent = money(by.text.quota + by.image.quota + by.video.quota);
+  }
+  function fmtTokens(n) { return n >= 1e6 ? (n / 1e6).toFixed(n >= 1e7 ? 0 : 1) + 'M' : n >= 1e3 ? Math.round(n / 1e3) + 'K' : String(n); }
+
+  async function loadCalls() {
+    let list = [];
+    try { list = items(await CA.account('GET', '/api/log/self?p=1&page_size=10&type=2')); } catch { list = []; }
+    $('callsEmpty').hidden = list.length > 0;
+    $('calls').innerHTML = list.map((l) => {
+      const k = modelKey(l.model_name);
+      const detail = k === 'text' ? `${l.prompt_tokens || 0} in · ${l.completion_tokens || 0} out` : k === 'image' ? 'Image' : k === 'video' ? 'Video' : esc(l.model_name);
+      const label = k ? `<span class="mdl"><img src="${CA.MODELS[k].logo}" alt="">${k}</span>` : esc(l.model_name);
+      return `<tr><td>${ago(l.created_at)}</td><td>${label}</td><td>${detail}${l.use_time ? ` · ${l.use_time} s` : ''}</td><td class="r num">${money(l.quota)}</td></tr>`;
+    }).join('');
+  }
+  $('reloadCalls').addEventListener('click', () => { loadCalls(); loadUsage(); loadUser().catch(() => {}); });
+
+  // ---------- funds ----------
+  async function loadFunds() {
+    try { S.topup = await CA.account('GET', '/api/user/topup/info'); } catch { S.topup = null; }
+    try { S.hadTopup = items(await CA.account('GET', '/api/user/topup/self?p=1&page_size=1')).length > 0; } catch { S.hadTopup = false; }
+    const opts = (S.topup && Array.isArray(S.topup.amount_options) && S.topup.amount_options.length ? S.topup.amount_options : [10, 20, 50, 100]).slice(0, 5);
+    S.amount = opts.includes(20) ? 20 : opts[0];
+    $('amountChips').innerHTML = opts.map((a) => `<button type="button" data-a="${a}" aria-pressed="${a === S.amount}">$${a}</button>`).join('');
+    $('openRedeem').hidden = !(S.topup && S.topup.enable_redemption);
+    $('openFunds').hidden = !(S.topup && S.topup.enable_stripe_topup);
+    $('fundsSoon').hidden = !($('openFunds').hidden && $('openRedeem').hidden);
+    renderChecklist();
+  }
+  $('amountChips').addEventListener('click', (e) => {
+    const b = e.target.closest('button'); if (!b) return;
+    S.amount = +b.dataset.a; $('amountInput').value = '';
+    $('amountChips').querySelectorAll('button').forEach((x) => x.setAttribute('aria-pressed', x === b ? 'true' : 'false'));
+  });
+  $('openFunds').addEventListener('click', () => { $('fundsForm').hidden = !$('fundsForm').hidden; $('redeemForm').hidden = true; });
+  $('openRedeem').addEventListener('click', () => { $('redeemForm').hidden = !$('redeemForm').hidden; $('fundsForm').hidden = true; if (!$('redeemForm').hidden) $('redeemInput').focus(); });
+  $('fundsForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const custom = parseFloat($('amountInput').value.replace(/[$,\s]/g, ''));
+    const amount = Math.round(isFinite(custom) && custom > 0 ? custom : S.amount);
+    if (!S.topup || !S.topup.enable_stripe_topup) { msg('fundsMsg', 'Card payments are not switched on yet. Redeem a code, or contact support.', 'bad'); return; }
+    const min = S.topup.stripe_min_topup || 1;
+    if (amount < min) { msg('fundsMsg', `The smallest top-up is $${min}.`, 'bad'); return; }
+    msg('fundsMsg', 'Opening the payment page…');
+    try {
+      const back = location.href.split(/[?#]/)[0];
+      const r = await CA.account('POST', '/api/user/stripe/pay', { amount, payment_method: 'stripe', success_url: back + '?paid=1', cancel_url: back });
+      const link = r && (r.pay_link || (r.data && r.data.pay_link));
+      if (link) location.href = link;
+      else msg('fundsMsg', S.cfg.serverless || S.cfg.demo ? `Demo: the Stripe page for $${amount} would open here.` : 'The payment page did not open. Try again.', S.cfg.serverless || S.cfg.demo ? 'ok' : 'bad');
+    } catch (err) { msg('fundsMsg', err.message, 'bad'); }
+  });
+  $('redeemForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const key = $('redeemInput').value.trim();
+    if (!key) { $('redeemInput').focus(); return; }
+    try {
+      const q = await CA.account('POST', '/api/user/topup', { key });
+      $('redeemInput').value = '';
+      msg('redeemMsg', `Added ${money(typeof q === 'number' ? q : 0)}.`, 'ok');
+      S.hadTopup = true;
+      await loadUser();
+    } catch (err) { msg('redeemMsg', err.message, 'bad'); }
+  });
+
+  // ---------- plans ----------
+  async function loadPlans() {
+    try {
+      S.plans = items(await CA.account('GET', '/api/subscription/plans')).map((p) => p.plan || p).filter((p) => p && p.enabled !== false).sort((a, b) => (+a.price_amount || 0) - (+b.price_amount || 0));
+      const self = await CA.account('GET', '/api/subscription/self');
+      S.subs = ((self && self.subscriptions) || []).map((s) => s.subscription || s);
+    } catch { S.plans = []; S.subs = []; }
+    $('plans').hidden = !S.plans.length;
+    const period = (p) => p.duration_unit === 'year' ? 'year' : p.duration_unit === 'day' ? (p.duration_value > 1 ? p.duration_value + ' days' : 'day') : 'month';
+    $('planList').innerHTML = S.plans.map((p) => {
+      const sub = S.subs.find((s) => s.plan_id === p.id && (s.status || 'active') === 'active');
+      const allowance = p.total_amount ? `${money(p.total_amount)} of usage every ${period(p)}, any model.` : (p.subtitle || '');
+      const right = sub
+        ? `<span class="cur">Current plan · ${money(sub.amount_total - sub.amount_used)} left${sub.end_time ? ' · until ' + new Date(sub.end_time * 1000).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : ''}</span>`
+        : `<button class="btn sm${p.title && /starter/i.test(p.title) ? ' primary' : ''}" type="button" data-plan="${p.id}">Start ${esc(p.title)}</button>`;
+      return `<div class="plan"><div class="pt"><b>${esc(p.title)}</b><span>${CA.usd(+p.price_amount || 0)} / ${period(p)}</span></div><p>${esc(allowance)}</p>${right}</div>`;
+    }).join('');
+    renderChecklist();
+  }
+  $('planList').addEventListener('click', async (e) => {
+    const b = e.target.closest('button[data-plan]'); if (!b) return;
+    const plan = S.plans.find((p) => p.id === +b.dataset.plan); if (!plan) return;
+    const price = +plan.price_amount || 0;
+    const canStripe = plan.stripe_price_id && S.topup && S.topup.enable_stripe_topup;
+    const balance = S.user ? S.user.quota / S.qpu : 0;
+    try {
+      if (canStripe) {
+        msg('planMsg', 'Opening the payment page…');
+        const back = location.href.split(/[?#]/)[0];
+        const r = await CA.account('POST', '/api/subscription/stripe/pay', { plan_id: plan.id, success_url: back + '?paid=1', cancel_url: back });
+        if (r && r.pay_link) { location.href = r.pay_link; return; }
+        throw new Error('The payment page did not open. Try again.');
+      }
+      if (plan.allow_balance_pay === false) throw new Error('This plan is not on sale yet.');
+      if (balance < price) throw new Error(`This plan costs ${CA.usd(price)} and is paid from your balance. Add funds first.`);
+      if (b.dataset.confirm !== '1') { b.dataset.confirm = '1'; b.textContent = `Pay ${CA.usd(price)} from balance`; return; }
+      await CA.account('POST', '/api/subscription/balance/pay', { plan_id: plan.id });
+      msg('planMsg', `You're on ${plan.title}.`, 'ok');
+      await loadUser(); await loadPlans();
+    } catch (err) { msg('planMsg', err.message, 'bad'); }
+  });
+
+  // ---------- checklist ----------
+  function renderChecklist() {
+    const items2 = [
+      ['Create your API key', !!S.primary],
+      ['Make your first call', !!(S.user && S.user.request_count > 0)],
+      ['Pick a plan or add funds', !!(S.hadTopup || S.subs.length)],
+    ];
+    $('checklist').innerHTML = items2.map(([t, done]) => `<li class="${done ? 'done' : ''}"><span class="box" aria-hidden="true"></span><span>${t}${done ? '<span class="sr"> (done)</span>' : ''}</span></li>`).join('');
+  }
+
+  // ---------- boot ----------
+  (async () => {
+    S.cfg = await CA.ready;
+    try { S.status = await CA.account('GET', '/api/status', undefined, { anonymous: true }); } catch { S.status = {}; }
+    if (S.status && S.status.quota_per_unit) S.qpu = S.status.quota_per_unit;
+    const demo = S.cfg.serverless || S.cfg.demo;
+    if (demo || CA.session.get()) {
+      try { await showApp(); return; } catch (err) { if (err.status !== 401) console.warn(err); }
+    }
+    showAuth(new URLSearchParams(location.search).get('signin') ? 'login' : 'register');
+  })();
+})();
+</script>
+</body>
+</html>

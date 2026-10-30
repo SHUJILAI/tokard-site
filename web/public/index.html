@@ -1,0 +1,301 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ChinaAPI</title>
+<meta name="description" content="China's flagship AI models in one API: DeepSeek for text, Seedream for images, Seedance for video. Always the newest versions, served outside China.">
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="icon" href="assets/brand/chinaapi-mark.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800&family=Geist+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="assets/site.css">
+<style>
+/* Page-specific styles; shared tokens, header, buttons and footer live in assets/site.css. */
+.hero { padding: 84px 0 52px; display: flex; flex-direction: column; gap: 24px; max-width: 900px; }
+.eyebrow { font-family: var(--f-mono); font-size: 12.5px; letter-spacing: .14em; text-transform: uppercase; color: var(--ink-2); display: flex; align-items: center; gap: 10px; }
+.eyebrow::before { content: ""; width: 8px; height: 8px; background: var(--accent); }
+.hero h1 { font-weight: 800; font-size: clamp(46px, 7.2vw, 100px); line-height: .98; letter-spacing: -0.045em; }
+.hero h1 em { font-style: normal; color: var(--accent); }
+.hero p.lead { font-size: 20px; line-height: 1.55; color: var(--ink-2); max-width: 36em; }
+.ctas { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+.ctas small { font-size: 14px; color: var(--muted); }
+
+.models { display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 16px; }
+.model { background: var(--panel); border: 1.5px solid var(--ink); display: flex; flex-direction: column; min-width: 0; }
+.model-top { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 14px 20px; border-bottom: 1px solid var(--line-2); }
+.model-top .kind { font-family: var(--f-mono); font-size: 13px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; }
+.model-top code { font-family: var(--f-mono); font-size: 13px; background: var(--bg); padding: 3px 8px; }
+.brandbox { height: 176px; margin: 20px 20px 4px; background: var(--panel-2); display: flex; align-items: center; justify-content: center; gap: 18px; }
+.brandbox img { width: 100px; height: 100px; object-fit: contain; }
+.brandbox b { font-size: 34px; letter-spacing: -0.03em; line-height: 1.1; }
+.brandbox small { display: block; font-size: 13px; color: var(--muted); font-weight: 400; letter-spacing: 0; }
+.model-body { padding: 16px 20px 22px; display: flex; flex-direction: column; gap: 10px; flex: 1; }
+.model-body h3 { font-size: 25px; letter-spacing: -0.02em; }
+.fresh { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; color: var(--ink-2); }
+.fresh::before { content: ""; width: 7px; height: 7px; background: var(--ok); }
+.model-body p { color: var(--ink-2); font-size: 15.5px; flex: 1; }
+.price { padding-top: 14px; border-top: 1px solid var(--line-2); font-family: var(--f-mono); font-size: 14px; }
+.price span { color: var(--muted); }
+.strip { display: flex; flex-wrap: wrap; gap: 10px 24px; align-items: center; background: var(--code-bg); color: var(--code-ink); padding: 18px 24px; margin-top: 16px; font-size: 15px; }
+.strip b { color: #FFFFFF; }
+.strip code { font-family: var(--f-mono); font-size: 14px; background: #1C2130; color: #FFFFFF; padding: 4px 10px; }
+
+.trust { display: flex; flex-wrap: wrap; gap: 12px 32px; padding: 22px 0; margin-top: 56px; border-top: 1.5px solid var(--ink); border-bottom: 1px solid var(--line); font-weight: 500; font-size: 15px; }
+.trust span { display: inline-flex; align-items: center; gap: 10px; }
+.trust span::before { content: ""; width: 6px; height: 6px; background: var(--accent); }
+
+section.block { padding: 96px 0 24px; }
+.split { display: flex; flex-wrap: wrap; gap: 56px; align-items: center; }
+.split > * { flex: 1 1 420px; min-width: 0; }
+h2.big { font-weight: 700; font-size: clamp(34px, 4.2vw, 52px); line-height: 1.05; letter-spacing: -0.035em; }
+.sub { font-size: 17px; color: var(--ink-2); max-width: 30em; }
+.stack { display: flex; flex-direction: column; gap: 20px; }
+
+.studio-shot { background: var(--panel); border: 1.5px solid var(--ink); box-shadow: 10px 10px 0 var(--accent); padding: 18px; display: flex; flex-direction: column; gap: 12px; }
+.bubble-u { align-self: flex-end; background: var(--ink); color: var(--bg); padding: 9px 14px; border-radius: 14px 14px 4px 14px; font-size: 14.5px; max-width: 85%; }
+.reply { display: flex; flex-direction: column; gap: 10px; font-size: 14.5px; color: var(--ink-2); }
+.toolrow { display: flex; align-items: center; gap: 10px; border: 1px solid var(--line); padding: 8px 12px; font-size: 13.5px; background: var(--panel-2); }
+.toolrow img { width: 22px; height: 22px; border-radius: 5px; object-fit: contain; }
+.toolrow b { color: var(--ink); }
+.toolrow .ok { margin-left: auto; font-size: 12px; font-weight: 600; color: var(--accent); }
+.studio-shot .art { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; image-rendering: pixelated; display: block; }
+
+.code { background: var(--code-bg); color: var(--code-ink); box-shadow: 10px 10px 0 var(--accent); }
+.code-tabs { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; padding: 10px 10px 0; border-bottom: 1px solid #222734; }
+.code-tabs [role=tablist] { display: flex; gap: 2px; flex-wrap: wrap; }
+.code-tabs button[role=tab] { border: 0; border-bottom: 2px solid transparent; background: transparent; color: var(--code-dim); font-family: var(--f-mono); font-size: 13px; padding: 10px 14px; min-height: 40px; cursor: pointer; }
+.code-tabs button[aria-selected=true] { color: #FFFFFF; border-bottom-color: var(--accent); }
+.copy { background: transparent; color: #C9CEDA; border: 1px solid #343A4A; font-family: var(--f-mono); font-size: 12px; padding: 6px 12px; min-height: 32px; margin-bottom: 8px; cursor: pointer; }
+.code pre { margin: 0; padding: 26px 24px; font-family: var(--f-mono); font-size: 14px; line-height: 1.75; overflow-x: auto; white-space: pre; min-height: 280px; }
+.checks { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; font-size: 15.5px; }
+.checks li { display: flex; gap: 10px; align-items: center; }
+.checks li::before { content: ""; width: 6px; height: 6px; background: var(--ink); flex: none; }
+
+.table-wrap { overflow-x: auto; background: var(--panel); border: 1px solid var(--line); margin-top: 28px; }
+table { width: 100%; border-collapse: collapse; font-size: 15px; min-width: 720px; }
+th, td { text-align: left; padding: 16px 22px; border-bottom: 1px solid var(--line-2); vertical-align: top; }
+tbody tr:last-child th, tbody tr:last-child td { border-bottom: 0; }
+thead th { font-weight: 600; border-bottom: 1px solid var(--line); }
+thead th.us { background: var(--accent); color: var(--on-accent); font-size: 18px; }
+td.us { background: var(--accent-wash); font-weight: 600; }
+tbody th { font-weight: 500; color: var(--ink-2); }
+.num { font-family: var(--f-mono); font-variant-numeric: tabular-nums; }
+
+.prices { overflow-x: auto; background: var(--panel); border: 1.5px solid var(--ink); box-shadow: 10px 10px 0 var(--accent); margin-top: 28px; }
+.prices thead th { background: var(--code-bg); color: #FFFFFF; font-weight: 500; font-size: 13px; letter-spacing: .06em; text-transform: uppercase; }
+.prices td.p { text-align: right; font-family: var(--f-mono); font-size: 18px; white-space: nowrap; }
+.plans { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; margin-top: 40px; }
+.plan { background: var(--panel); border: 1px solid var(--line); padding: 26px; display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+.plan.featured { border: 2px solid var(--accent); }
+.plan .amt { display: flex; align-items: baseline; gap: 6px; }
+.plan .amt b { font-size: 46px; letter-spacing: -0.035em; line-height: 1; }
+.plan .amt span { color: var(--muted); }
+.plan ul { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 8px; font-size: 15px; color: var(--ink-2); flex: 1; }
+.plan .btn { justify-content: center; }
+
+.steps { list-style: none; margin: 28px 0 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px; }
+.steps li { background: var(--panel); border: 1px solid var(--line); padding: 26px; display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.steps .n { font-family: var(--f-mono); font-size: 14px; font-weight: 600; color: var(--accent); }
+.steps code { font-family: var(--f-mono); font-size: 13px; background: var(--bg); padding: 8px 10px; overflow-x: auto; white-space: nowrap; }
+.steps p { font-size: 15px; color: var(--ink-2); }
+
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="nav">
+  <a class="logo" href="index.html" aria-label="ChinaAPI home"><img src="assets/brand/chinaapi-mark.svg" alt=""><span style="color:inherit">China<span>API</span></span></a>
+  <nav class="links" aria-label="Main">
+    <a class="hide-sm" href="#models">Models</a>
+    <a data-page="pricing" href="pricing.html">Pricing</a>
+    <a data-page="playground" href="playground.html">Playground</a>
+    <a data-page="studio" href="studio.html">Studio</a>
+    <a class="hide-sm" href="#docs">Docs</a>
+    <a class="btn primary js-account" data-page="console" href="console.html">Get API key</a>
+  </nav>
+</header>
+
+<section class="hero">
+  <p class="eyebrow">China's flagship AI models · served outside China</p>
+  <h1>3 models. 1 key.<br><em>0 decisions.</em></h1>
+  <p class="lead">Text, image and video from China's top labs, always on the newest version. Keep your OpenAI SDK, change one URL, and ask for what you need.</p>
+  <div class="ctas">
+    <a class="btn primary" href="console.html">Get API key
+      <svg width="8" height="12" viewBox="0 0 5 7" aria-hidden="true" shape-rendering="crispEdges"><path d="M0 0h1v7h-1zM1 1h1v5h-1zM2 2h1v3h-1zM3 3h1v1h-1z" fill="currentColor"/></svg></a>
+    <a class="btn" href="studio.html">Open Studio</a>
+    <small>$5 free credit. No card needed.</small>
+  </div>
+</section>
+
+<section id="models" class="models" aria-label="The three models">
+  <article class="model">
+    <div class="model-top"><span class="kind">Text</span><code>model="text"</code></div>
+    <div class="brandbox"><img src="assets/brand/deepseek.svg" alt="DeepSeek logo"><b>DeepSeek</b></div>
+    <div class="model-body">
+      <h3>DeepSeek V4.1 Flash</h3>
+      <span class="fresh">Newest version, auto-updated</span>
+      <p>Chat, agents, coding and data extraction, with a 1M-token context window. Reads images too.</p>
+      <div class="price">$0.30 in · $1.20 out <span>per 1M tokens</span></div>
+    </div>
+  </article>
+  <article class="model">
+    <div class="model-top"><span class="kind">Image</span><code>model="image"</code></div>
+    <div class="brandbox"><img src="assets/brand/dreamina.png" alt="Dreamina logo" style="width:92px;height:92px"><b>Dreamina</b></div>
+    <div class="model-body">
+      <h3>Seedream 5.0 Pro</h3>
+      <span class="fresh">Newest version, auto-updated</span>
+      <p>Text to image and image editing, with clean text rendering, up to 2048 px.</p>
+      <div class="price">$0.045 <span>per image</span></div>
+    </div>
+  </article>
+  <article class="model">
+    <div class="model-top"><span class="kind">Video</span><code>model="video"</code></div>
+    <div class="brandbox"><img src="assets/brand/seed.png" alt="ByteDance Seed logo"><b>Seedance<small>by ByteDance Seed</small></b></div>
+    <div class="model-body">
+      <h3>Seedance 2.5</h3>
+      <span class="fresh">Newest version, auto-updated</span>
+      <p>Text or image to video, with sound, up to 30 seconds per clip.</p>
+      <div class="price">$0.23 <span>per second · 720p</span></div>
+    </div>
+  </article>
+</section>
+<div class="strip"><b>Always the newest version.</b><span>When a lab ships an update, you get it the same week. Need a fixed version? Pin it:</span><code>model="text@2026-10"</code></div>
+
+<div class="trust">
+  <span>OpenAI-compatible</span><span>Anthropic-compatible for text</span><span>Automatic failover</span><span>Data processed outside China</span><span>Pay per use or monthly</span>
+</div>
+
+<section class="block split" aria-labelledby="studio-h">
+  <div class="stack">
+    <h2 class="big" id="studio-h">All three in one chat.</h2>
+    <p class="sub">ChinaAPI Studio is a multimodal agent. DeepSeek talks with you and decides when to draw with Seedream or film with Seedance. Attach a photo to edit it or bring it to life.</p>
+    <ul class="checks">
+      <li>Ask, draw and film in the same conversation</li>
+      <li>Attach images for questions, edits or animation</li>
+      <li>Uses your own key, so every call shows in your console</li>
+    </ul>
+    <a class="btn primary" href="studio.html" style="align-self:flex-start">Open Studio</a>
+  </div>
+  <div class="studio-shot" aria-hidden="true">
+    <div class="bubble-u">Make a poster of a koi fish over a neon city, then animate it</div>
+    <div class="reply">
+      <div class="toolrow"><img src="assets/brand/dreamina.png" alt=""><b>Seedream 5.0 Pro</b><span>Creating image</span><span class="ok">Done</span></div>
+      <img class="art" src="samples/koi.png" alt="">
+      <div class="toolrow"><img src="assets/brand/seed.png" alt=""><b>Seedance 2.5</b><span>Making video · 5 s · sound</span><span class="ok">Done</span></div>
+      <span>Here's your poster and a 5 second clip of it swimming.</span>
+    </div>
+  </div>
+</section>
+
+<section id="docs" class="block split" aria-labelledby="docs-h">
+  <div class="stack">
+    <h2 class="big" id="docs-h">Keep your SDK.<br>Change one URL.</h2>
+    <p class="sub">The same OpenAI client you already use for chat, images and video. For coding tools that speak Anthropic, set three environment variables.</p>
+    <ul class="checks">
+      <li>Python, Node and plain HTTP</li>
+      <li>Claude Code, Cursor and Cline</li>
+      <li>Streaming, tool calls and JSON output</li>
+    </ul>
+  </div>
+  <div class="code">
+    <div class="code-tabs">
+      <div role="tablist" aria-label="Example">
+        <button role="tab" aria-selected="true" data-tab="text" type="button">Text</button>
+        <button role="tab" aria-selected="false" data-tab="image" type="button">Image</button>
+        <button role="tab" aria-selected="false" data-tab="video" type="button">Video</button>
+        <button role="tab" aria-selected="false" data-tab="claude" type="button">Claude Code</button>
+      </div>
+      <button class="copy" id="copy" type="button">Copy</button>
+    </div>
+    <pre id="code"></pre>
+  </div>
+</section>
+
+<section class="block" aria-labelledby="why-h">
+  <h2 class="big" id="why-h">Why not sign up with each lab?</h2>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th scope="col"></th><th scope="col" class="us">ChinaAPI</th><th scope="col">Each lab directly</th><th scope="col">Big aggregators</th></tr></thead>
+      <tbody>
+        <tr><th scope="row">Accounts to open</th><td class="us">1</td><td>One per lab</td><td>1</td></tr>
+        <tr><th scope="row">Models to choose from</th><td class="us">3: text, image, video</td><td>Many versions per lab</td><td>400+</td></tr>
+        <tr><th scope="row">Price rules to learn</th><td class="us">One line per model</td><td>Peak hours, tiers, token math</td><td>Varies by provider</td></tr>
+        <tr><th scope="row">Where your data is processed</th><td class="us">Outside China</td><td>Often in China</td><td>Depends on the provider</td></tr>
+        <tr><th scope="row">When a new version ships</th><td class="us">You get it automatically</td><td>You change your code</td><td>You change your code</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section id="pricing" class="block" aria-labelledby="pricing-h">
+  <h2 class="big" id="pricing-h">One price per model. Same all day.</h2>
+  <div class="prices">
+    <table>
+      <thead><tr><th scope="col">Model</th><th scope="col">Runs on</th><th scope="col" style="text-align:right">Price</th><th scope="col">Billed per</th></tr></thead>
+      <tbody>
+        <tr><th scope="row" style="color:var(--ink);font-weight:700;font-size:18px">Text</th><td>DeepSeek V4.1 Flash</td><td class="p">$0.30 in · $1.20 out</td><td>1M tokens (cached input $0.006)</td></tr>
+        <tr><th scope="row" style="color:var(--ink);font-weight:700;font-size:18px">Image</th><td>Seedream 5.0 Pro</td><td class="p">$0.045</td><td>Image, up to 2048 px</td></tr>
+        <tr><th scope="row" style="color:var(--ink);font-weight:700;font-size:18px">Video</th><td>Seedance 2.5</td><td class="p">$0.23</td><td>Second of 720p video, sound included</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="plans">
+    <div class="plan"><h3>Pay as you go</h3><div class="amt"><b>$0</b><span>/ month</span></div><ul><li>$5 free credit to start</li><li>Pay the prices above</li><li>Text, image and video</li></ul><a class="btn" href="console.html">Get API key</a></div>
+    <div class="plan featured"><h3>Starter</h3><div class="amt"><b>$20</b><span>/ month</span></div><ul><li>Monthly usage allowance, any model</li><li>Usage shown in tokens, images and seconds</li><li>Claude Code and Cursor presets</li></ul><a class="btn primary" href="console.html#plans">Start Starter</a></div>
+    <div class="plan"><h3>Pro</h3><div class="amt"><b>$100</b><span>/ month</span></div><ul><li>Larger allowance, any model</li><li>Priority routing and higher rate limits</li><li>Invoice billing</li></ul><a class="btn" href="console.html#plans">Start Pro</a></div>
+  </div>
+</section>
+
+<section class="block" aria-labelledby="start-h">
+  <h2 class="big" id="start-h">Live in three steps</h2>
+  <ol class="steps">
+    <li><span class="n">Step 1</span><h3>Get a key</h3><p>Sign up in the console. Your key and $5 of free credit are waiting.</p><a href="console.html" style="color:var(--accent);font-weight:600">Open the console</a></li>
+    <li><span class="n">Step 2</span><h3>Change one URL</h3><p>Keep your OpenAI SDK. Point it here.</p><code class="js-api">https://api.chinaapi.ai/v1</code></li>
+    <li><span class="n">Step 3</span><h3>Say what you need</h3><p>Use text, image or video as the model name. Done.</p><code>model="image"</code></li>
+  </ol>
+</section>
+
+<footer class="site">
+  <div><span style="display:inline-flex;align-items:center;gap:8px"><img src="assets/brand/chinaapi-mark.svg" alt="" width="16" height="16" style="image-rendering:pixelated">© 2026 ChinaAPI</span>
+  <small>DeepSeek, Dreamina, Seedream, Seedance and ByteDance Seed are trademarks of their respective owners.</small></div>
+  <nav aria-label="Footer"><a href="pricing.html">Pricing</a><a href="playground.html">Playground</a><a href="studio.html">Studio</a><a href="console.html">Console</a><a href="#docs">Docs</a></nav>
+</footer>
+
+</div>
+<script src="assets/site.js"></script>
+<script>
+(() => {
+  let api = 'https://api.chinaapi.ai';
+  const snippets = () => ({
+    text: `from openai import OpenAI\n\nclient = OpenAI(\n    base_url="${api}/v1",\n    api_key="sk-...",\n)\n\nreply = client.chat.completions.create(\n    model="text",\n    messages=[{"role": "user", "content": "Summarize this ticket"}],\n)`,
+    image: `# same client as above\n\nimg = client.images.generate(\n    model="image",\n    prompt="A koi fish over a neon city at night, poster style",\n    size="2048x1152",\n)\nprint(img.data[0].url)`,
+    video: `# same client as above\n\nvideo = client.videos.create(\n    model="video",\n    prompt="A koi fish swims through a neon city at night",\n    seconds="5",\n    extra_body={"metadata": {"resolution": "720p", "ratio": "16:9"}},\n)`,
+    claude: `# Claude Code (Cursor and Cline work the same way)\nexport ANTHROPIC_BASE_URL=${api}\nexport ANTHROPIC_AUTH_TOKEN=$CHINAAPI_KEY\nexport ANTHROPIC_MODEL=text\n\nclaude`,
+  });
+  let tab = 'text';
+  const pre = document.getElementById('code');
+  const copyBtn = document.getElementById('copy');
+  const show = () => { pre.textContent = snippets()[tab]; };
+  document.querySelectorAll('[role=tab]').forEach((b) => b.addEventListener('click', () => {
+    tab = b.dataset.tab;
+    document.querySelectorAll('[role=tab]').forEach((x) => x.setAttribute('aria-selected', x === b ? 'true' : 'false'));
+    copyBtn.textContent = 'Copy';
+    show();
+  }));
+  copyBtn.addEventListener('click', () => {
+    const done = (t) => { copyBtn.textContent = t; setTimeout(() => { copyBtn.textContent = 'Copy'; }, 1800); };
+    try {
+      navigator.clipboard.writeText(pre.textContent).then(() => done('Copied'), () => {
+        const r = document.createRange(); r.selectNodeContents(pre); const s = getSelection(); s.removeAllRanges(); s.addRange(r); done('Press Ctrl+C');
+      });
+    } catch { done('Press Ctrl+C'); }
+  });
+  show();
+  window.ChinaAPI.ready.then((cfg) => { api = cfg.apiUrl.replace(/\/+$/, ''); show(); });
+})();
+</script>
+</body>
+</html>

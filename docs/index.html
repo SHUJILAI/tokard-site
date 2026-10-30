@@ -1,0 +1,333 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Tokard · China's best AI, at face value</title>
+<meta name="description" content="China's best AI, at face value. DeepSeek, Seedream and Seedance on official keys, sold as cards: what's printed on the card is what you get, and it can't spend a cent more.">
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="theme-color" content="#F5F6F8">
+<link rel="icon" href="assets/brand/tokard-mark.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=Geist+Mono:wght@400;500;600;700&family=Hanken+Grotesk:wght@300..700&display=swap">
+<link rel="stylesheet" href="assets/site2.css">
+<link rel="stylesheet" href="assets/cards.css">
+<style>
+
+/* ---------- anatomy: one big card, three lines; hovering a line lights the part ---------- */
+.anatomy { display: grid; grid-template-columns: minmax(0, 6fr) minmax(0, 6fr); gap: 56px; align-items: center; }
+.anatomy .plate { position: relative; display: flex; justify-content: center; padding: 64px 0; border-radius: 28px;
+  background: radial-gradient(circle at 1px 1px, #D6DBE5 1.1px, transparent 1.5px) 0 0 / 20px 20px, #FFFFFF; box-shadow: inset 0 0 0 1px var(--line); }
+.anatomy .pc .hl { outline: 2px solid var(--accent); outline-offset: 5px; border-radius: 2px; transition: outline-offset .3s ease; }
+.says { list-style: none; margin: 40px 0 0; padding: 0; border-top: 1px solid var(--line); }
+.says li { padding: 20px 0; border-bottom: 1px solid var(--line); font-size: clamp(19px, 1.05rem + .4vw, 24px); letter-spacing: -0.012em; line-height: 1.35; color: var(--ink-3); cursor: default; transition: color .25s ease; }
+.says li b { color: var(--ink); font-weight: 600; transition: color .25s ease; }
+.says li.on b { color: var(--accent); }
+@media (max-width: 960px) { .anatomy { grid-template-columns: 1fr; gap: 28px; } .says { margin-top: 0; } }
+
+/* ---------- decks: an index, not a grid of feature cards ---------- */
+.decks { border-top: 1px solid var(--line); }
+.deck-row { display: grid; grid-template-columns: 250px minmax(0, 1.1fr) minmax(0, 1fr) 190px; gap: 32px; align-items: center; padding: 40px 0; border-bottom: 1px solid var(--line); }
+.fan { position: relative; height: 210px; }
+.fan .cmini { position: absolute; left: 50%; top: 50%; margin: -84px 0 0 -60px; transition: transform .7s var(--ease-reveal); }
+.fan { --sp: 64px; }
+.fan .cmini:nth-child(1) { transform: translateX(calc(var(--sp) * -1)) translateY(8px) rotate(-9deg); }
+.fan .cmini:nth-child(2) { transform: translateY(-4px); z-index: 2; }
+.fan .cmini:nth-child(3) { transform: translateX(var(--sp)) translateY(8px) rotate(9deg); z-index: 3; }
+.deck-row:hover .fan .cmini:nth-child(1), .deck-row:focus-within .fan .cmini:nth-child(1) { transform: translateX(calc(var(--sp) * -1.2)) translateY(10px) rotate(-13deg); }
+.deck-row:hover .fan .cmini:nth-child(2), .deck-row:focus-within .fan .cmini:nth-child(2) { transform: translateY(-14px); }
+.deck-row:hover .fan .cmini:nth-child(3), .deck-row:focus-within .fan .cmini:nth-child(3) { transform: translateX(calc(var(--sp) * 1.2)) translateY(10px) rotate(13deg); }
+@media (max-width: 1100px) { .fan { --sp: 50px; } }
+.deck-name .by { display: block; margin-top: 12px; font-size: 15px; font-weight: 600; color: var(--ink); }
+.deck-name h3 { font-family: var(--f-display); font-stretch: 116%; font-size: clamp(36px, 3.6vw, 60px); font-weight: 650; letter-spacing: -0.03em; line-height: .95; }
+.deck-name p { margin-top: 12px; color: #3E4553; max-width: 26em; font-size: 16.5px; line-height: 1.55; }
+.sample { border-radius: 14px; overflow: hidden; background: #FFFFFF; box-shadow: inset 0 0 0 1px var(--line); aspect-ratio: 16 / 10; position: relative; }
+.sample img, .sample video { width: 100%; height: 100%; object-fit: cover; display: block; image-rendering: pixelated; }
+.sample.t { overflow: visible; }
+.sample .txt { position: relative; padding: 18px 20px; font-family: var(--f-mono); font-size: 12.5px; line-height: 1.7; color: var(--ink-2); }
+.sample .txt b { color: var(--ink); font-weight: 500; }
+.deck-buy { display: flex; flex-direction: column; gap: 12px; align-items: flex-start; }
+.deck-buy .u { font-family: var(--f-mono); font-size: 13px; color: var(--ink-2); }
+.deck-buy .off { font: 650 13px var(--f-body); color: #FFFFFF; background: var(--accent); padding: 4px 9px; }
+@media (max-width: 1100px) { .deck-row { grid-template-columns: 200px minmax(0, 1fr) minmax(0, 1fr); } .deck-buy { grid-column: 2 / -1; flex-direction: row; align-items: center; } }
+@media (max-width: 760px) { .deck-row { grid-template-columns: 1fr; gap: 22px; padding: 32px 0; } .fan { height: 190px; } .deck-buy { grid-column: auto; } }
+
+/* ---------- code ---------- */
+.codewrap { display: grid; grid-template-columns: minmax(0, 4fr) minmax(0, 8fr); gap: 20px; align-items: stretch; }
+.codecard { border-radius: 24px; background: radial-gradient(circle at 1px 1px, #D6DBE5 1.1px, transparent 1.5px) 0 0 / 20px 20px, #FFFFFF; box-shadow: inset 0 0 0 1px var(--line); padding: 28px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px; }
+.term { border-radius: 24px; background: #FFFFFF; box-shadow: inset 0 0 0 1px var(--line); display: flex; flex-direction: column; min-width: 0; }
+.term .bar { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; padding: 12px 14px 12px 16px; border-bottom: 1px solid var(--line); }
+.tabs { display: inline-flex; gap: 4px; padding: 4px; border-radius: 999px; background: var(--bg-3); }
+.tabs button { -webkit-appearance: none; appearance: none; border: 0; background: none; cursor: pointer; padding: 7px 14px; border-radius: 999px; font-size: 13.5px; font-weight: 500; color: var(--ink-2); transition: background .25s, color .25s, box-shadow .25s; }
+.tabs button[aria-selected="true"] { background: #FFFFFF; color: var(--ink); box-shadow: 0 1px 3px rgba(11,13,18,.12); }
+.term pre { margin: 0; padding: 26px 24px; font-family: var(--f-mono); font-size: 13.5px; line-height: 1.8; color: #2B303B; overflow-x: auto; white-space: pre; flex: 1; }
+.term pre .k { color: #FFFFFF; background: var(--kc, var(--accent)); padding: 1px 4px; }
+.term pre .s { color: #0F7A45; }
+.term pre .c { color: #9AA2B3; }
+@media (max-width: 960px) { .codewrap { grid-template-columns: 1fr; } }
+
+/* ---------- odds: the numbers are the image ---------- */
+.odds-row { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+.odd { padding: 30px 22px 26px 0; border-right: 1px solid var(--line); display: flex; flex-direction: column; gap: 12px; }
+.odd + .odd { padding-left: 22px; }
+.odd:last-child { border-right: 0; }
+.odd .p { font-family: var(--f-display); font-stretch: 125%; font-size: clamp(44px, 5.4vw, 96px); font-weight: 300; letter-spacing: -0.04em; line-height: .9; font-variant-numeric: tabular-nums; }
+.odd .p small { font-size: .4em; letter-spacing: 0; color: var(--ink-3); }
+.odd .t { display: flex; align-items: center; gap: 8px; font: 500 14px var(--f-body); color: var(--ink-2); }
+.odd .t i { width: 8px; height: 8px; background: var(--c); }
+.odd .blocks { display: flex; gap: 2px; flex-wrap: wrap; max-width: 150px; }
+.odd .blocks i { width: 6px; height: 6px; background: var(--c); }
+.odd[data-k="great"] .p { color: #2340FF; } .odd[data-k="rare"] .p { color: #7A5CFF; } .odd[data-k="jackpot"] .p { color: #D18E00; }
+.odds-foot { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 30px 32px; margin-top: 36px; }
+.odds-foot .tlink { justify-self: start; }
+@media (max-width: 760px) { .odds-foot { grid-template-columns: 1fr; } }
+.odds-foot .jp { display: flex; align-items: center; gap: 18px; }
+.odds-foot .pips { margin-top: 0; }
+.ultm { display: flex; align-items: center; gap: 18px; }
+.pityf { display: flex; align-items: center; gap: 18px; }
+.pityf .meta { display: block; margin-top: 4px; }
+.pityf .pmini { padding-top: 4px; }
+.ultm .ubar { display: grid; grid-template-columns: repeat(20, 7px); gap: 3px; }
+.ultm .ubar i { height: 14px; background: var(--line-2); }
+.ultm .ubar i.on { background: linear-gradient(180deg, #FFE08A, #F2B51C); }
+.ultm .ubar i.on:last-of-type, .ultm .ubar i.edge { background: linear-gradient(180deg, #FF9BD8, #9A7BFF); }
+.ultm .meta { display: block; margin-top: 4px; }
+@media (max-width: 600px) { .odds-foot .jp, .ultm, .pityf { gap: 12px; } .odds-foot .h3 { font-size: 18px; } .ultm .ubar { grid-template-columns: repeat(20, 5px); gap: 2px; } }
+
+.pips { display: grid; grid-template-columns: repeat(10, 14px); gap: 4px; margin-top: 16px; }
+.pips i { width: 14px; height: 14px; background: var(--line-2); }
+.pips i.on { background: #F2B51C; box-shadow: inset -3px -3px 0 #D18E00, inset 3px 3px 0 #FFE08A; }
+.rules { margin: 0; padding: 0; list-style: none; counter-reset: r; display: flex; flex-direction: column; gap: 12px; color: var(--ink-2); font-size: 15.5px; }
+.rules li { counter-increment: r; display: grid; grid-template-columns: 34px 1fr; }
+.rules li::before { content: counter(r, decimal-leading-zero); font: 500 12px var(--f-mono); color: var(--ink-3); padding-top: 4px; }
+@media (max-width: 960px) { .odds-row { grid-template-columns: repeat(2, minmax(0, 1fr)); } .odd { border-bottom: 1px solid var(--line); padding-left: 0 !important; } .odd:nth-child(odd) { padding-right: 16px; } .odd:nth-child(even) { border-right: 0; padding-left: 16px !important; } .odd:last-child { border-bottom: 0; } .odds-foot { grid-template-columns: 1fr; } }
+
+/* ---------- travel: share + gift ---------- */
+.travel { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: 40px; align-items: center; }
+.shareimg { position: relative; aspect-ratio: 1200 / 630; border-radius: 22px; overflow: hidden; background: radial-gradient(circle at 1px 1px, #E6D9B0 1.1px, transparent 1.5px) 0 0 / 20px 20px, linear-gradient(135deg, #FFFDF5, #FFF4D4); box-shadow: inset 0 0 0 1px #EFE3BF, 0 40px 80px -40px rgba(11,13,18,.35); display: flex; align-items: center; gap: 6%; padding: 0 7%; }
+.shareimg .cmini { flex: none; transform: rotate(-6deg); filter: drop-shadow(0 30px 30px rgba(11,13,18,.25)); }
+.shareimg .big { font-family: var(--f-display); font-stretch: 116%; font-size: clamp(28px, 3.4vw, 52px); font-weight: 650; letter-spacing: -0.03em; line-height: .95; color: var(--ink); }
+.shareimg .big em { font-style: normal; color: #D18E00; }
+.shareimg .url { position: absolute; right: 6%; bottom: 7%; display: inline-flex; align-items: center; gap: 8px; font: 500 12px var(--f-mono); letter-spacing: .14em; color: var(--ink-2); }
+.shareimg .url img { width: 11px; height: 15px; image-rendering: pixelated; }
+.travel .acts { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 26px; }
+@media (max-width: 960px) { .travel { grid-template-columns: 1fr; } }
+@media (max-width: 600px) {
+  .shareimg { gap: 5%; padding: 0 6% 6%; border-radius: 18px; }
+  .shareimg .cmini { --mw: 96px !important; --mw-n: 96 !important; }
+  .shareimg .big { font-size: clamp(22px, 7vw, 30px); }
+  .shareimg .url { right: 5%; bottom: 6%; font-size: 9px; letter-spacing: .1em; gap: 5px; }
+  .shareimg .url img { width: 8px; height: 11px; }
+}
+
+/* ---------- last call ---------- */
+.lastcall { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 24px; align-items: end; padding-bottom: 12px; border-bottom: 1px solid var(--line); }
+@media (max-width: 760px) { .lastcall { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<header class="topbar"><div class="container row">
+  <a class="brandmark" href="index.html" aria-label="Tokard home"><img src="assets/brand/tokard-mark.svg" alt=""><span>Tokard</span></a>
+  <nav class="toplinks" aria-label="Main">
+    <a data-page="shop" href="shop.html">Shop</a>
+    <a data-page="playground" href="playground.html">Playground</a>
+    <a data-page="studio" href="studio.html">Studio</a>
+    <a href="docs.html">Docs</a>
+  </nav>
+  <div class="topcta"><a class="vbtn primary sm" data-page="console" href="console.html">Wallet</a><button class="vbtn ghost sm menu-btn icon-btn" type="button" aria-expanded="false" aria-label="Menu"><svg class="mi" viewBox="0 0 24 24" aria-hidden="true"><path data-icon="menu" d="M4 7h16M4 12h16M4 17h16"/></svg></button></div>
+</div></header>
+
+<main id="top">
+<section class="hero" id="hero" aria-labelledby="hero-h">
+  <div class="pxfloor" aria-hidden="true"></div>
+  <div class="container grid">
+    <div>
+      <h1 class="display" id="hero-h"><span class="l"><span>China's best AI,</span></span><span class="l"><span>at <span class="card-word">face value.</span></span></span></h1>
+      <p class="lead">DeepSeek, Seedream and Seedance on official keys, sold as cards. What's printed on the card is what you get: the real model, and a limit it can't spend a cent past. Flip three a day to get one for less.</p>
+      <div class="facts"><a class="tlink" href="shop.html">Or buy from the shop →</a></div>
+    </div>
+    <div id="heroStage" class="stage">
+      <div class="hero-offer" id="heroOffer" hidden></div>
+    </div>
+  </div>
+</section>
+
+<section class="section" aria-labelledby="anat-h">
+  <div class="container anatomy" id="anatomy">
+    <div class="plate rv" id="plate"></div>
+    <div class="rv" style="--d:1">
+      <h2 class="h2" id="anat-h">Read<br>the card.</h2>
+      <ul class="says" id="says">
+        <li data-a="emblem"><b>The model.</b> The real one, from DeepSeek or BytePlus. Never swapped.</li>
+        <li data-a="label"><b>The name.</b> One card per app, so you always know which key is where.</li>
+        <li data-a="budget"><b>The face value.</b> Its hard limit. When it's spent, calls stop.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="section" aria-labelledby="decks-h">
+  <div class="container">
+    <div class="section-head">
+      <h2 class="h2 rv" id="decks-h">Few models.<br>No substitutes.</h2>
+      <p class="lead rv" style="--d:1">We only sell what we can stand behind: DeepSeek, and ByteDance's Seed models, on keys issued by DeepSeek and BytePlus themselves.</p>
+    </div>
+    <div class="decks" id="decks"></div>
+  </div>
+</section>
+
+<section class="section" id="docs" aria-labelledby="code-h">
+  <div class="container">
+    <div class="section-head">
+      <h2 class="h2 rv" id="code-h">Same code.<br>New card.</h2>
+    </div>
+    <div class="codewrap rv">
+      <div class="codecard" id="codecard"></div>
+      <div class="term">
+        <div class="bar"><div class="tabs" role="tablist" aria-label="Deck" id="codeTabs">
+          <button role="tab" aria-selected="true" data-k="text" type="button">Coding</button><button role="tab" aria-selected="false" data-k="image" type="button">Design</button><button role="tab" aria-selected="false" data-k="video" type="button">Film</button><button role="tab" aria-selected="false" data-k="claude" type="button">Claude Code</button>
+        </div><button class="vbtn ghost sm icon-btn" type="button" id="copyCode" aria-label="Copy"><svg class="mi" viewBox="0 0 24 24" aria-hidden="true"><path data-icon="copy" d="M9 9h11v11H9zM15 5V4H4v11h1"/></svg></button></div>
+        <pre id="code"></pre>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" aria-labelledby="odds-h">
+  <div class="container">
+    <div class="section-head">
+      <h2 class="h2 rv" id="odds-h">Even the odds<br>are printed.</h2>
+      <p class="lead rv" style="--d:1">Flipping is free, and every flip beats the shop price. You see what you'd pay before you pay it, and you can always walk away.</p>
+    </div>
+    <div class="odds-row rv" id="oddsRow"></div>
+    <div class="odds-foot rv">
+      <div class="jp"><div class="pips" id="pips" aria-hidden="true"></div><span class="h3"><span id="jpLeft" class="num">14</span> jackpots left today</span></div>
+      <div class="pityf"><span class="pmini due" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="g"></i></span><span><span class="h3">Gold within five flips</span><span class="meta">Four misses make the fifth 30% off</span></span></div>
+      <div class="ultm"><div class="ubar" id="ubar" aria-hidden="true"></div><span><span class="h3"><span id="ultIn" class="num">–</span> cards until the next Ultimate</span><span class="meta">$100 for $0.10</span></span></div>
+      <a class="tlink" href="odds.html">All the odds and rules →</a>
+    </div>
+  </div>
+</section>
+
+<section class="section" aria-labelledby="travel-h">
+  <div class="container travel">
+    <div class="shareimg rv" id="shareimg" aria-label="Example share image"></div>
+    <div class="rv" style="--d:1">
+      <h2 class="h2" id="travel-h">Lucky?<br>Show the card.</h2>
+      <p class="lead" style="margin-top:22px">Share a lucky flip. When a friend you invite flips their first card, you get another flip.</p>
+      <div class="acts"><button class="vbtn primary" type="button" id="shareBtn">Copy share link</button></div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container lastcall">
+    <h2 class="display rv" id="lastH" style="font-size:clamp(40px,6vw,112px)">Today's hand<br>is face down.</h2>
+    <a class="vbtn primary rv" href="#top" id="lastBtn" style="--d:1">Flip today's cards</a>
+  </div>
+</section>
+</main>
+
+<footer class="foot"><div class="container">
+  <div class="row">
+    <a class="brandmark" href="index.html"><img src="assets/brand/tokard-mark.svg" alt=""><span>Tokard</span></a>
+    <nav aria-label="Footer"><a href="shop.html">Shop</a><a href="console.html">Wallet</a><a href="playground.html">Playground</a><a href="studio.html">Studio</a><a href="docs.html">Docs</a><a href="odds.html">Odds and rules</a></nav>
+  </div>
+  <small>© 2026 Tokard. DeepSeek, Dreamina, Seedream, Seedance and ByteDance Seed are trademarks of their respective owners. Every call behind a Tokard card runs on original official API keys from DeepSeek and BytePlus.</small>
+</div></footer>
+
+<script src="assets/morph.js"></script>
+<script src="assets/site.js"></script>
+<script src="assets/cards.js"></script>
+<script src="assets/pet.js"></script>
+<script>
+(() => {
+  'use strict';
+  const C = window.Cards, CA = window.ChinaAPI, $ = (id) => document.getElementById(id);
+  const S = C.state;
+
+  // ================= hero: flip right here =================
+  const hero = $('hero');
+  requestAnimationFrame(() => hero.classList.add('on'));
+  const flip = C.mountFlip({ root: hero, stage: $('heroStage'), offer: $('heroOffer'), onChange: () => tick() });
+
+  // ================= anatomy =================
+  const plate = $('plate');
+  const anatomyCard = { kind: 'text', value: 100, off: 0, price: 100, serial: '2041' };
+  plate.insertAdjacentHTML('afterbegin', C.mini(anatomyCard, { width: Math.round(Math.min(340, plate.clientWidth - 48)), label: 'Support bot', budget: { left: 61.2 }, lift: false }));
+  const parts = { emblem: ['.pc-front .badge', '.pc-front .mname'], label: ['.pc-front .label'], budget: ['.pc-front .budget .bar', '.pc-front .fv'] };
+  document.querySelectorAll('#says li').forEach((li) => {
+    const on = (v) => { li.classList.toggle('on', v); parts[li.dataset.a].forEach((sel) => { const el = plate.querySelector(sel); if (el) el.classList.toggle('hl', v); }); };
+    li.addEventListener('mouseenter', () => on(true)); li.addEventListener('mouseleave', () => on(false));
+  });
+
+  // ================= decks =================
+  const SAMPLES = {
+    text: '<div class="txt"><b>› Summarize this ticket and give it a priority.</b><br><br>EU customers can\'t complete card payments since 09:00; checkout times out.<br><br><b>Priority: P1</b> — revenue-impacting outage.</div>',
+    image: '<img src="samples/koi.png" alt="Sample image: a koi fish over a neon city" loading="lazy">',
+    video: `<video src="samples/koi.mp4" poster="samples/koi.png" ${C.reduced ? '' : 'autoplay'} muted loop playsinline preload="metadata" aria-label="Sample video: a koi fish swimming through a neon city"></video>`,
+  };
+  const DESC = { text: 'For code, agents and long chats. Fits a whole repo in its 1M-token context, and reads screenshots.', image: 'For posters, product shots and edits, with clean lettering at up to 2K.', video: 'For short films from a prompt or a picture, with sound, up to 30 seconds.' };
+  $('decks').innerHTML = ['text', 'image', 'video'].map((k, i) => `<article class="deck-row rv" style="--d:${i}">
+      <div class="fan" aria-hidden="true">${[5, 20, 100].map((v) => C.mini({ kind: k, value: v, off: 0, price: v, serial: String(1000 + v * 7 + i) }, { width: 120, lift: false })).join('')}</div>
+      <div class="deck-name"><h3>${C.KIND[k].deck}</h3><span class="by">${CA.MODELS[k].name}</span><p>${DESC[k]}</p></div>
+      <div class="sample${k === 'text' ? ' t' : ''}">${SAMPLES[k]}</div>
+      <div class="deck-buy"><span class="u">${C.KIND[k].unit}</span>${C.maxOff(k) ? `<span class="off">Up to ${C.maxOff(k)}% off</span>` : ''}<a class="vbtn ghost sm" href="shop.html#${k}">Get a card</a></div>
+    </article>`).join('');
+
+  // ================= code =================
+  const keyFor = { text: 'sk-…3Ywu', image: 'sk-…Q7f2', video: 'sk-…mR8k', claude: 'sk-…3Ywu' };
+  const SNIP = (k) => {
+    const key = `<span class="k">"${keyFor[k]}"</span>`, s = (t) => `<span class="s">"${t}"</span>`;
+    const DS = 'https://api.deepseek.com', ARK = 'https://ark.ap-southeast.bytepluses.com/api/v3';
+    if (k === 'image') return `<span class="c"># your card: an official BytePlus key</span>\nfrom openai import OpenAI\n\nclient = OpenAI(base_url=${s(ARK)}, api_key=${key})\n\nimg = client.images.generate(\n    model=${s('seedream-5-0-pro-260628')},\n    prompt=${s('A koi fish over a neon city, poster style')},\n    size=${s('2K')},\n)`;
+    if (k === 'video') return `<span class="c"># your card: an official BytePlus key</span>\nimport requests\n\ntask = requests.post(\n    ${s(ARK + '/contents/generations/tasks')},\n    headers={${s('Authorization')}: ${s('Bearer ' + keyFor[k])}},\n    json={\n        ${s('model')}: ${s('dreamina-seedance-2-5-260628')},\n        ${s('content')}: [{${s('type')}: ${s('text')}, ${s('text')}: ${s('A koi fish swims through a neon city at night')}}],\n        ${s('duration')}: 5,\n        ${s('resolution')}: ${s('720p')},\n    },\n).json()`;
+    if (k === 'claude') return `<span class="c"># your card: an official DeepSeek key</span>\nexport ANTHROPIC_BASE_URL=<span class="s">${DS}/anthropic</span>\nexport ANTHROPIC_AUTH_TOKEN=${key}\nexport ANTHROPIC_MODEL=<span class="s">deepseek-flash[1m]</span>\n\nclaude`;
+    return `<span class="c"># your card: an official DeepSeek key</span>\nfrom openai import OpenAI\n\nclient = OpenAI(base_url=${s(DS)}, api_key=${key})\n\nreply = client.chat.completions.create(\n    model=${s('deepseek-flash')},\n    messages=[{${s('role')}: ${s('user')}, ${s('content')}: ${s('Summarize this ticket')}}],\n)`;
+  };
+  function showCode(k) {
+    const kind = k === 'claude' ? 'text' : k;
+    $('code').innerHTML = SNIP(k);
+    const tc = { text: '#9AAEFF', image: '#6EE7FF', video: '#7FF3FF' }[kind];
+    document.querySelector('.codewrap').style.setProperty('--kc', tc);
+    $('codecard').innerHTML = C.mini({ kind, value: 100, off: 0, price: 100, serial: { text: '2041', image: '3317', video: '0786' }[kind] }, { width: 220, lift: false, label: k === 'claude' ? 'Claude Code' : { text: 'Support bot', image: 'Product shots', video: 'Launch teaser' }[kind] });
+    document.querySelectorAll('#codeTabs [role=tab]').forEach((b) => b.setAttribute('aria-selected', b.dataset.k === k ? 'true' : 'false'));
+  }
+  document.querySelectorAll('#codeTabs [role=tab]').forEach((b) => b.addEventListener('click', () => showCode(b.dataset.k)));
+  $('copyCode').addEventListener('click', () => CA.copy($('code').textContent, $('copyCode')));
+  showCode('text');
+
+  // ================= odds =================
+  const TW = C.TIERS.filter((t) => t.w), tw = TW.reduce((s, t) => s + t.w, 0);
+  $('oddsRow').innerHTML = TW.map((t) => { const p = Math.round(t.w / tw * 100); return `<div class="odd" data-k="${t.key}" style="--c:${t.color}"><span class="p">${p}<small>%</small></span><span class="blocks" aria-hidden="true">${'<i></i>'.repeat(p)}</span><span class="t"><i></i>${t.name} · ${t.half ? 'half price' : t.extra + '% more off'}</span></div>`; }).join('');
+  $('pips').innerHTML = '<i></i>'.repeat(C.JACKPOTS_PER_DAY);
+  $('ubar').innerHTML = '<i></i>'.repeat(20);
+
+  // ================= share image =================
+  $('shareimg').innerHTML = C.mini({ kind: 'text', value: 100, off: 50, price: 50, tier: 'jackpot', serial: '0427' }, { width: 190, lift: false }) + '<p class="big">50% off.<br><em>Flipped</em> on<br>Tokard.</p><span class="url"><img src="assets/brand/tokard-mark.svg" alt="">TOKARD.AI/FLIP</span>';
+  $('shareBtn').addEventListener('click', () => { CA.copy('https://tokard.ai/flip', $('shareBtn'), 'Copy share link'); C.toast('Share link copied.'); });
+
+  // ================= clock =================
+  function tick() {
+    const st = S.get();
+    $('jpLeft').textContent = Math.max(0, st.jackpotsLeft);
+    document.querySelectorAll('#pips i').forEach((p, i) => p.classList.toggle('on', i < st.jackpotsLeft));
+    const uin = S.nextUltimateIn(), done = Math.floor((C.ULTIMATE.every - uin) / C.ULTIMATE.every * 20);
+    $('ultIn').textContent = uin.toLocaleString('en-US');
+    document.querySelectorAll('#ubar i').forEach((p, i) => { p.classList.toggle('on', i < done); p.classList.toggle('edge', i === done); });
+    const n = $('nextIn'); if (n) n.textContent = C.left(S.nextFlipAt());
+    const can = S.canFlip();
+    $('lastH').innerHTML = can ? "Today's hand<br>is face down." : 'New cards in<br><span class="num">' + C.left(S.nextFlipAt()) + '</span>';
+    $('lastBtn').textContent = can ? "Flip today's cards" : "See today's cards";
+  }
+  setInterval(tick, 1000);
+  $('lastBtn').addEventListener('click', (e) => { e.preventDefault(); hero.scrollIntoView({ behavior: C.reduced ? 'auto' : 'smooth' }); });
+
+  // demo: odds.html links here with #ultimate to show the Ultimate reveal on the next flip
+  if (location.hash === '#ultimate') S.redeal();
+  flip.boot(); tick();
+})();
+</script>
+</body>
+</html>

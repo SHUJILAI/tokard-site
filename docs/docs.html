@@ -1,0 +1,494 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Using your card · Tokard</title>
+<meta name="description" content="How to use a Tokard card: official DeepSeek and BytePlus keys, called directly at the providers' own endpoints.">
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="theme-color" content="#F5F6F8">
+<link rel="icon" href="assets/brand/tokard-mark.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=Geist+Mono:wght@400;500;600;700&family=Hanken+Grotesk:wght@300..700&display=swap">
+<link rel="stylesheet" href="assets/site2.css">
+<style>
+.docs { display: grid; grid-template-columns: 236px minmax(0, 1fr) 200px; gap: 56px; align-items: start; padding-top: 28px; padding-bottom: 120px; }
+/* sidebar */
+.side { position: sticky; top: 84px; max-height: calc(100vh - 100px); overflow: auto; padding: 4px 4px 24px 0; scrollbar-width: thin; }
+.side .find { position: relative; margin-bottom: 18px; }
+.side .find input { width: 100%; height: 38px; border: 0; border-radius: 10px; padding: 0 12px 0 34px; background: #FFFFFF; box-shadow: inset 0 0 0 1px var(--line); font-size: 14px; outline: none; }
+.side .find input:focus { box-shadow: inset 0 0 0 1.5px var(--accent); }
+.side .find svg { position: absolute; left: 11px; top: 11px; width: 16px; height: 16px; stroke: var(--ink-3); fill: none; stroke-width: 2; }
+.side h4 { margin: 20px 0 6px; font: 600 11.5px/1.4 var(--f-mono); letter-spacing: .12em; text-transform: uppercase; color: var(--ink-3); }
+.side h4:first-of-type { margin-top: 0; }
+.side a { display: block; padding: 6px 10px; margin-left: -10px; border-radius: 8px; font-size: 14.5px; color: var(--ink-2); line-height: 1.35; transition: background .15s, color .15s; }
+.side a:hover { color: var(--ink); background: var(--bg-3); }
+.side a.on { color: var(--accent); background: var(--accent-wash); font-weight: 500; }
+.side .none { font-size: 14px; color: var(--ink-3); padding: 6px 0; }
+/* article */
+.doc { min-width: 0; max-width: 780px; }
+.doc .crumb { font: 500 12px var(--f-mono); letter-spacing: .1em; text-transform: uppercase; color: var(--accent); }
+.doc h1 { font-size: clamp(36px, 3.4vw, 52px); font-weight: 500; letter-spacing: -0.04em; line-height: 1.02; margin-top: 10px; }
+.doc .intro { font-size: 19px; line-height: 1.55; color: var(--ink-2); margin-top: 16px; }
+.doc section { padding-top: 56px; scroll-margin-top: 70px; }
+.doc h2 { font-size: 30px; font-weight: 500; letter-spacing: -0.03em; line-height: 1.15; scroll-margin-top: 90px; }
+.doc h3 { font-size: 19px; font-weight: 600; letter-spacing: -0.01em; margin-top: 32px; scroll-margin-top: 90px; }
+.doc h2 + p, .doc h3 + p { margin-top: 12px; }
+.doc p, .doc li { color: var(--ink-2); font-size: 16.5px; line-height: 1.7; }
+.doc p + p { margin-top: 14px; }
+.doc ul, .doc ol { padding-left: 22px; margin: 14px 0 0; }
+.doc li + li { margin-top: 6px; }
+.doc a.l { color: var(--accent); background-image: linear-gradient(currentColor, currentColor); background-size: 100% 1px; background-position: 0 100%; background-repeat: no-repeat; }
+.doc code { font-family: var(--f-mono); font-size: .86em; background: var(--bg-3); padding: 2px 6px; border-radius: 6px; color: var(--ink); }
+.doc .anchor { opacity: 0; margin-left: 8px; color: var(--ink-3); font-weight: 400; transition: opacity .15s; }
+.doc h2:hover .anchor, .doc h3:hover .anchor { opacity: 1; }
+/* endpoint line */
+.ep { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 14px; font: 500 14px var(--f-mono); overflow-wrap: anywhere; min-width: 0; }
+.doc p code, .doc li code, .note code, .tbl code { overflow-wrap: anywhere; }
+.ep .m { padding: 3px 8px; border-radius: 6px; font-size: 12px; font-weight: 600; letter-spacing: .04em; }
+.ep .m.post { background: #E7F7EE; color: #0D7A43; } .ep .m.get { background: var(--accent-wash); color: var(--accent); }
+/* tables */
+.tbl { width: 100%; border-collapse: collapse; margin-top: 18px; font-size: 15px; }
+.tbl th { text-align: left; font: 600 11.5px var(--f-mono); letter-spacing: .1em; text-transform: uppercase; color: var(--ink-3); padding: 10px 14px 10px 0; border-bottom: 1px solid var(--line-2); }
+.tbl td { padding: 12px 14px 12px 0; border-bottom: 1px solid var(--line); color: var(--ink-2); vertical-align: top; line-height: 1.5; }
+.tbl td:first-child { color: var(--ink); }
+.tbl-wrap { overflow-x: auto; }
+/* callout */
+.note { margin-top: 18px; padding: 14px 16px; border-radius: 12px; background: var(--accent-wash); color: var(--ink); font-size: 15.5px; line-height: 1.6; }
+.note.warn { background: #FFF7E0; }
+/* steps */
+.steps { counter-reset: s; list-style: none; padding: 0 !important; }
+.steps > li { counter-increment: s; position: relative; padding-left: 40px; margin-top: 18px !important; }
+.steps > li::before { content: counter(s); position: absolute; left: 0; top: 1px; width: 26px; height: 26px; display: grid; place-items: center; border-radius: 8px; background: var(--ink); color: #FFFFFF; font: 600 13px var(--f-mono); }
+/* code */
+.code { margin-top: 18px; border-radius: 14px; background: #0E1220; color: #DCE2F2; overflow: hidden; box-shadow: 0 1px 2px rgba(11,13,18,.1); }
+.code .bar { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 6px 6px 6px 10px; border-bottom: 1px solid rgba(255,255,255,.08); }
+.code .langs { display: flex; gap: 2px; }
+.code .langs button { -webkit-appearance: none; appearance: none; border: 0; background: none; cursor: pointer; color: #8A93B5; font: 500 12.5px var(--f-mono); padding: 6px 10px; border-radius: 8px; }
+.code .langs button[aria-selected="true"] { color: #FFFFFF; background: rgba(255,255,255,.08); }
+.code .langs .one { color: #8A93B5; font: 500 12.5px var(--f-mono); padding: 6px 4px; }
+.code .cp { -webkit-appearance: none; appearance: none; border: 0; background: none; cursor: pointer; color: #8A93B5; width: 32px; height: 32px; display: grid; place-items: center; border-radius: 8px; }
+.code .cp:hover { color: #FFFFFF; background: rgba(255,255,255,.08); }
+.code .cp svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.code pre code { background: none; padding: 0; border-radius: 0; color: inherit; font-size: inherit; }
+.code pre { margin: 0; padding: 16px 18px 18px; overflow-x: auto; font: 13.5px/1.7 var(--f-mono); tab-size: 2; }
+.code .c { color: #6B7699; font-style: italic; } .code .s { color: #9BE3B4; } .code .k { color: #9FB2FF; } .code .n { color: #FFC98A; } .code .p { color: #F0A6FF; }
+/* on this page */
+.toc { position: sticky; top: 84px; padding-top: 6px; }
+.toc h4 { font: 600 11.5px var(--f-mono); letter-spacing: .12em; text-transform: uppercase; color: var(--ink-3); margin: 0 0 10px; }
+.toc a { display: block; padding: 4px 0 4px 12px; border-left: 1px solid var(--line); font-size: 13.5px; color: var(--ink-3); line-height: 1.4; }
+.toc a.sub { padding-left: 24px; }
+.toc a.on { color: var(--ink); border-left-color: var(--accent); }
+.pager { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 72px; }
+.pager a { display: block; padding: 16px 18px; border-radius: 14px; background: #FFFFFF; box-shadow: inset 0 0 0 1px var(--line); }
+.pager a:hover { box-shadow: inset 0 0 0 1px var(--line-2); }
+.pager small { display: block; font: 500 11.5px var(--f-mono); letter-spacing: .1em; text-transform: uppercase; color: var(--ink-3); }
+.pager b { display: block; margin-top: 4px; font-weight: 500; }
+.pager .next { text-align: right; grid-column: 2; }
+/* mobile contents */
+.mtoc { display: none; }
+@media (max-width: 1180px) { .docs { grid-template-columns: 220px minmax(0, 1fr); gap: 44px; } .toc { display: none; } }
+@media (max-width: 860px) {
+  .docs { grid-template-columns: 1fr; gap: 0; padding-top: 12px; }
+  .side { display: none; }
+  .mtoc { display: block; position: sticky; top: 68px; z-index: 5; margin: 0 calc(-1 * var(--gutter)); padding: 10px var(--gutter); background: rgba(245,246,248,.94); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); box-shadow: 0 1px 0 var(--line); }
+  .mtoc select { width: 100%; height: 40px; border: 0; border-radius: 10px; padding: 0 12px; background: #FFFFFF; box-shadow: inset 0 0 0 1px var(--line); font-size: 15px; }
+  .doc section { padding-top: 44px; }
+  .doc h2 { font-size: 26px; }
+}
+</style>
+</head>
+<body>
+<header class="topbar"><div class="container row">
+  <a class="brandmark" href="index.html" aria-label="Tokard home"><img src="assets/brand/tokard-mark.svg" alt=""><span>Tokard</span></a>
+  <nav class="toplinks" aria-label="Main">
+    <a data-page="shop" href="shop.html">Shop</a>
+    <a data-page="playground" href="playground.html">Playground</a>
+    <a data-page="studio" href="studio.html">Studio</a>
+    <a data-page="docs" href="docs.html" aria-current="page">Docs</a>
+  </nav>
+  <div class="topcta"><a class="vbtn primary sm" data-page="console" href="console.html">Wallet</a><button class="vbtn ghost sm menu-btn icon-btn" type="button" aria-expanded="false" aria-label="Menu"><svg class="mi" viewBox="0 0 24 24" aria-hidden="true"><path data-icon="menu" d="M4 7h16M4 12h16M4 17h16"/></svg></button></div>
+</div></header>
+
+<div class="container docs">
+  <aside class="side" aria-label="Documentation">
+    <div class="find"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><input id="find" type="search" placeholder="Search the docs" aria-label="Search the docs" autocomplete="off"></div>
+    <nav id="sideNav"></nav>
+  </aside>
+
+  <article class="doc" id="doc">
+    <div class="mtoc"><select id="mtoc" aria-label="Jump to section"></select></div>
+    <p class="crumb">Documentation</p>
+    <h1>Using your card</h1>
+    <p class="intro">Every Tokard card carries an official API key, issued by DeepSeek or BytePlus. You call the provider directly, at its own address, with its own model IDs. Tokard is never in the path of your requests.</p>
+
+    <section id="quickstart" data-group="Getting started">
+      <h2>Quickstart</h2>
+      <ol class="steps">
+        <li>Get a card: flip today's three on the <a class="l" href="index.html">home page</a>, or buy one in the <a class="l" href="shop.html">shop</a>.</li>
+        <li>Open the card in your <a class="l" href="console.html">wallet</a>. It shows three things: the key, the base URL and the model ID.</li>
+        <li>Put those three into any OpenAI-compatible client. For a Coding card:</li>
+      </ol>
+      <div class="code" data-sample="quick"></div>
+    </section>
+
+    <section id="how" data-group="Getting started">
+      <h2>How a card works</h2>
+      <ul>
+        <li><b>The key is official.</b> It was issued by DeepSeek or BytePlus, and it works only against their API.</li>
+        <li><b>The face value is the key's balance.</b> Every call is billed by the provider at its own published prices. When the balance is used up, the provider refuses further calls until you refill the card.</li>
+        <li><b>Your requests go straight to the provider.</b> Tokard never sees your prompts, files or outputs.</li>
+      </ul>
+    </section>
+
+    <section id="endpoints" data-group="Getting started">
+      <h2>Endpoints and model IDs</h2>
+      <p>Each deck is one provider. Your card shows the exact model ID to use; these are the current ones.</p>
+      <div class="tbl-wrap"><table class="tbl">
+        <thead><tr><th>Deck</th><th>Provider</th><th>Base URL</th><th>Model ID</th></tr></thead>
+        <tbody>
+          <tr><td>Coding</td><td>DeepSeek</td><td><code>https://api.deepseek.com</code><br><code>https://api.deepseek.com/anthropic</code> (Anthropic format)</td><td><code>deepseek-flash</code></td></tr>
+          <tr><td>Design</td><td>BytePlus ModelArk</td><td><code>https://ark.ap-southeast.bytepluses.com/api/v3</code></td><td><code>seedream-5-0-pro-260628</code></td></tr>
+          <tr><td>Film</td><td>BytePlus ModelArk</td><td><code>https://ark.ap-southeast.bytepluses.com/api/v3</code></td><td><code>dreamina-seedance-2-5-260628</code></td></tr>
+        </tbody>
+      </table></div>
+      <div class="note">For full parameters, limits and changes, the providers' own documentation is the reference: <a class="l" href="https://api-docs.deepseek.com/" target="_blank" rel="noopener">DeepSeek API docs</a> and <a class="l" href="https://docs.byteplus.com/en/docs/ModelArk/1099455" target="_blank" rel="noopener">BytePlus ModelArk docs</a>.</div>
+    </section>
+
+    <section id="deepseek-chat" data-group="Coding">
+      <h2>Chat completions</h2>
+      <div class="ep"><span class="m post">POST</span>https://api.deepseek.com/chat/completions</div>
+      <p>DeepSeek uses the OpenAI Chat Completions format, so the OpenAI SDKs work as they are. <code>deepseek-flash</code> is DeepSeek V4.1 Flash: a 1M-token context, and it reads images.</p>
+      <div class="code" data-sample="chat"></div>
+      <h3 id="deepseek-stream">Streaming</h3>
+      <p>Set <code>stream</code> to <code>true</code> to receive the answer as it's written.</p>
+      <div class="code" data-sample="stream"></div>
+      <p style="margin-top:14px">Thinking mode, tool calls, JSON output and context caching are covered in the <a class="l" href="https://api-docs.deepseek.com/api/create-chat-completion" target="_blank" rel="noopener">DeepSeek API reference</a>.</p>
+    </section>
+
+    <section id="deepseek-anthropic" data-group="Coding">
+      <h2>Anthropic format</h2>
+      <p>DeepSeek also answers the Anthropic Messages format at <code>https://api.deepseek.com/anthropic</code>. Use the card's key as the API key.</p>
+      <div class="code" data-sample="anthropic"></div>
+    </section>
+
+    <section id="claude-code" data-group="Coding">
+      <h2>Claude Code and other tools</h2>
+      <p>Point Claude Code at DeepSeek with these environment variables, as in <a class="l" href="https://api-docs.deepseek.com/quick_start/agent_integrations/claude_code" target="_blank" rel="noopener">DeepSeek's guide</a>:</p>
+      <div class="code" data-sample="claudecode"></div>
+      <p style="margin-top:14px">In Cursor, Cline and other tools, choose an OpenAI-compatible provider and enter the base URL <code>https://api.deepseek.com</code>, the card's key, and the model <code>deepseek-flash</code>.</p>
+    </section>
+
+    <section id="seedream" data-group="Design">
+      <h2>Generate images</h2>
+      <div class="ep"><span class="m post">POST</span>https://ark.ap-southeast.bytepluses.com/api/v3/images/generations</div>
+      <p>ModelArk's image endpoint works with the OpenAI SDK's <code>images.generate</code>. Set <code>size</code> to <code>"2K"</code> or to pixel dimensions; results come back as a <code>url</code> (valid for 24 hours) or as <code>b64_json</code>.</p>
+      <div class="code" data-sample="image"></div>
+      <p style="margin-top:14px">To edit, pass one or more source images in <code>image</code>. Every parameter is in the <a class="l" href="https://docs.byteplus.com/en/docs/ModelArk/1541523" target="_blank" rel="noopener">ModelArk image generation API</a>.</p>
+    </section>
+
+    <section id="seedance" data-group="Film">
+      <h2>Generate videos</h2>
+      <div class="ep"><span class="m post">POST</span>https://ark.ap-southeast.bytepluses.com/api/v3/contents/generations/tasks</div>
+      <div class="ep"><span class="m get">GET</span>https://ark.ap-southeast.bytepluses.com/api/v3/contents/generations/tasks/{id}</div>
+      <p>Videos render in the background: create a task, check it until its status is <code>succeeded</code>, then download <code>content.video_url</code>. Set the length with <code>duration</code> (in seconds) and the quality with <code>resolution</code>; <code>generate_audio</code> adds sound.</p>
+      <div class="code" data-sample="video"></div>
+      <div class="note">Set <code>duration</code> and <code>resolution</code> explicitly: they decide what a video costs. Prices per second are on <a class="l" href="https://docs.byteplus.com/en/docs/ModelArk/1544106" target="_blank" rel="noopener">ModelArk pricing</a>.</div>
+    </section>
+
+    <section id="balance" data-group="Your card">
+      <h2>Balance and refills</h2>
+      <p>A card's face value is the balance behind its key, and the wallet shows what's left. When it runs out, the provider refuses calls (DeepSeek answers <code>402 Insufficient Balance</code>) and nothing more can be charged.</p>
+      <p>Refill a card from the wallet to bring it back to its face value. The key stays the same, so nothing in your code changes. Refills are priced like the shop, with the discount of the card's size.</p>
+    </section>
+
+    <section id="key-safety" data-group="Your card">
+      <h2>Key safety</h2>
+      <ul>
+        <li>Use one card per app or project, so a problem in one never touches the others.</li>
+        <li>Keep keys in environment variables or a secret manager, never in source code.</li>
+        <li>Call the API from your server. A key in a web page or a mobile app can be copied.</li>
+        <li>If a key leaks, freeze the card in your wallet and move to a new card.</li>
+      </ul>
+    </section>
+
+    <section id="errors" data-group="Reference">
+      <h2>Errors</h2>
+      <p>Errors come from the provider. The ones you'll see most from DeepSeek:</p>
+      <div class="tbl-wrap"><table class="tbl">
+        <thead><tr><th>Status</th><th>Meaning</th><th>What to do</th></tr></thead>
+        <tbody>
+          <tr><td><code>400</code> / <code>422</code></td><td>The request body or a parameter is invalid.</td><td>Fix it using the hint in the message.</td></tr>
+          <tr><td><code>401</code></td><td>The key is wrong.</td><td>Copy it again from the wallet.</td></tr>
+          <tr><td><code>402</code></td><td>The card's balance is used up.</td><td>Refill the card in the wallet.</td></tr>
+          <tr><td><code>429</code></td><td>Too many requests at once.</td><td>Slow down and retry with backoff.</td></tr>
+          <tr><td><code>500</code> / <code>503</code></td><td>The provider is busy or having trouble.</td><td>Retry after a short wait.</td></tr>
+        </tbody>
+      </table></div>
+      <p style="margin-top:14px">Full lists: <a class="l" href="https://api-docs.deepseek.com/quick_start/error_codes" target="_blank" rel="noopener">DeepSeek error codes</a> and the <a class="l" href="https://docs.byteplus.com/en/docs/ModelArk/1099455" target="_blank" rel="noopener">ModelArk documentation</a>.</p>
+    </section>
+
+    <section id="limits" data-group="Reference">
+      <h2>Rate limits</h2>
+      <p>Rate limits are set by each provider for every key, and they change over time. See <a class="l" href="https://api-docs.deepseek.com/quick_start/rate_limit" target="_blank" rel="noopener">DeepSeek rate limits</a> and the <a class="l" href="https://docs.byteplus.com/en/docs/ModelArk/1330310" target="_blank" rel="noopener">ModelArk model list</a> for current numbers.</p>
+    </section>
+
+    <section id="official" data-group="Reference">
+      <h2>Official documentation</h2>
+      <div class="tbl-wrap"><table class="tbl">
+        <thead><tr><th>Provider</th><th>Page</th></tr></thead>
+        <tbody>
+          <tr><td>DeepSeek</td><td><a class="l" href="https://api-docs.deepseek.com/" target="_blank" rel="noopener">Your first API call</a> · <a class="l" href="https://api-docs.deepseek.com/quick_start/pricing" target="_blank" rel="noopener">Models and pricing</a> · <a class="l" href="https://api-docs.deepseek.com/api/create-chat-completion" target="_blank" rel="noopener">API reference</a> · <a class="l" href="https://api-docs.deepseek.com/guides/anthropic_api" target="_blank" rel="noopener">Anthropic API</a></td></tr>
+          <tr><td>BytePlus ModelArk</td><td><a class="l" href="https://docs.byteplus.com/en/docs/ModelArk/1099455" target="_blank" rel="noopener">Overview</a> · <a class="l" href="https://docs.byteplus.com/en/docs/ModelArk/1330310" target="_blank" rel="noopener">Model list</a> · <a class="l" href="https://docs.byteplus.com/en/docs/ModelArk/1541523" target="_blank" rel="noopener">Image generation API</a> · <a class="l" href="https://docs.byteplus.com/en/docs/ModelArk/1544106" target="_blank" rel="noopener">Pricing</a></td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <nav class="pager" aria-label="More"><a class="next" href="index.html"><small>Next</small><b>Flip today's cards</b></a></nav>
+  </article>
+
+  <aside class="toc" aria-label="On this page"><h4>On this page</h4><nav id="toc"></nav></aside>
+</div>
+
+<footer class="foot"><div class="container">
+  <div class="row">
+    <a class="brandmark" href="index.html"><img src="assets/brand/tokard-mark.svg" alt=""><span>Tokard</span></a>
+    <nav aria-label="Footer"><a href="shop.html">Shop</a><a href="console.html">Wallet</a><a href="playground.html">Playground</a><a href="studio.html">Studio</a><a href="docs.html">Docs</a><a href="odds.html">Odds and rules</a></nav>
+  </div>
+  <small>© 2026 Tokard. DeepSeek, Dreamina, Seedream, Seedance and ByteDance Seed are trademarks of their respective owners. Every call behind a Tokard card runs on original official API keys from DeepSeek and BytePlus.</small>
+</div></footer>
+
+<script src="assets/morph.js"></script>
+<script src="assets/site.js"></script>
+<script>
+(() => {
+  const $ = (id) => document.getElementById(id);
+  const DS = 'https://api.deepseek.com', ARK = 'https://ark.ap-southeast.bytepluses.com/api/v3';
+  const S = {
+    quick: {
+      Python: `from openai import OpenAI
+
+client = OpenAI(base_url="${DS}", api_key="sk-your-card-key")
+
+reply = client.chat.completions.create(
+    model="deepseek-flash",
+    messages=[{"role": "user", "content": "Write a haiku about budgets."}],
+)
+print(reply.choices[0].message.content)`,
+      'Node.js': `import OpenAI from "openai";
+
+const client = new OpenAI({ baseURL: "${DS}", apiKey: process.env.DEEPSEEK_API_KEY });
+
+const reply = await client.chat.completions.create({
+  model: "deepseek-flash",
+  messages: [{ role: "user", content: "Write a haiku about budgets." }],
+});
+console.log(reply.choices[0].message.content);`,
+      curl: `curl ${DS}/chat/completions \\
+  -H "Authorization: Bearer $DEEPSEEK_API_KEY" \\
+  -H "Content-Type: application/json" \\
+  -d '{"model": "deepseek-flash", "messages": [{"role": "user", "content": "Write a haiku about budgets."}]}'`,
+    },
+    chat: {
+      Python: `reply = client.chat.completions.create(
+    model="deepseek-flash",
+    messages=[
+        {"role": "system", "content": "You are a terse support agent."},
+        {"role": "user", "content": "Customers can't pay since 09:00. Priority?"},
+    ],
+)
+print(reply.choices[0].message.content)
+print(reply.usage)  # what this call cost, in tokens`,
+      'Node.js': `const reply = await client.chat.completions.create({
+  model: "deepseek-flash",
+  messages: [
+    { role: "system", content: "You are a terse support agent." },
+    { role: "user", content: "Customers can't pay since 09:00. Priority?" },
+  ],
+});
+console.log(reply.choices[0].message.content);`,
+    },
+    stream: {
+      Python: `stream = client.chat.completions.create(
+    model="deepseek-flash",
+    messages=[{"role": "user", "content": "Explain rate limits in one paragraph."}],
+    stream=True,
+)
+for chunk in stream:
+    print(chunk.choices[0].delta.content or "", end="", flush=True)`,
+      'Node.js': `const stream = await client.chat.completions.create({
+  model: "deepseek-flash",
+  messages: [{ role: "user", content: "Explain rate limits in one paragraph." }],
+  stream: true,
+});
+for await (const chunk of stream) {
+  process.stdout.write(chunk.choices[0]?.delta?.content ?? "");
+}`,
+    },
+    anthropic: {
+      Python: `import anthropic
+
+client = anthropic.Anthropic(base_url="${DS}/anthropic", api_key="sk-your-card-key")
+
+msg = client.messages.create(
+    model="deepseek-flash",
+    max_tokens=512,
+    messages=[{"role": "user", "content": "Summarize this ticket in one line."}],
+)
+print(msg.content[0].text)`,
+    },
+    claudecode: {
+      Shell: `export ANTHROPIC_BASE_URL=${DS}/anthropic
+export ANTHROPIC_AUTH_TOKEN=sk-your-card-key
+export ANTHROPIC_MODEL=deepseek-flash[1m]
+export ANTHROPIC_DEFAULT_HAIKU_MODEL=deepseek-flash
+
+claude`,
+    },
+    image: {
+      Python: `import os
+from openai import OpenAI
+
+client = OpenAI(base_url="${ARK}", api_key=os.environ["ARK_API_KEY"])
+
+img = client.images.generate(
+    model="seedream-5-0-pro-260628",
+    prompt="A koi fish over a neon city, poster style",
+    size="2K",
+    response_format="url",
+    extra_body={"watermark": False},
+)
+print(img.data[0].url)`,
+      curl: `curl ${ARK}/images/generations \\
+  -H "Authorization: Bearer $ARK_API_KEY" \\
+  -H "Content-Type: application/json" \\
+  -d '{"model": "seedream-5-0-pro-260628", "prompt": "A koi fish over a neon city, poster style", "size": "2K", "watermark": false}'`,
+    },
+    video: {
+      curl: `# 1. create the task
+curl ${ARK}/contents/generations/tasks \\
+  -H "Authorization: Bearer $ARK_API_KEY" \\
+  -H "Content-Type: application/json" \\
+  -d '{
+    "model": "dreamina-seedance-2-5-260628",
+    "content": [{"type": "text", "text": "A koi fish swims through a neon city at night"}],
+    "duration": 5,
+    "resolution": "720p",
+    "generate_audio": true
+  }'
+
+# 2. check it until "status" is "succeeded", then download content.video_url
+curl ${ARK}/contents/generations/tasks/TASK_ID -H "Authorization: Bearer $ARK_API_KEY"`,
+      Python: `import os, time, requests
+
+ARK = "${ARK}"
+H = {"Authorization": f"Bearer {os.environ['ARK_API_KEY']}"}
+
+task = requests.post(f"{ARK}/contents/generations/tasks", headers=H, json={
+    "model": "dreamina-seedance-2-5-260628",
+    "content": [{"type": "text", "text": "A koi fish swims through a neon city at night"}],
+    "duration": 5,
+    "resolution": "720p",
+    "generate_audio": True,
+}).json()
+
+while True:
+    t = requests.get(f"{ARK}/contents/generations/tasks/{task['id']}", headers=H).json()
+    if t["status"] in ("succeeded", "failed"):
+        break
+    time.sleep(5)
+
+print(t["content"]["video_url"] if t["status"] == "succeeded" else t)`,
+    },
+  };
+
+  // ---------- a small highlighter: comments, strings, numbers, keywords ----------
+  const KW = /\b(from|import|as|const|let|await|async|for|of|in|while|if|return|print|True|False|None|export|new|def|curl|console|process)\b/;
+  const esc = (s) => s.replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
+  function hl(code, lang) {
+    if (lang === 'JSON') {
+      return code.replace(/("(?:[^"\\]|\\.)*")(\s*:)?|(-?\b\d+(?:\.\d+)?\b)|([^"\d]+)/g, (m, str, colon, num, rest) =>
+        str ? (colon ? `<span class="k">${esc(str)}</span>${colon}` : `<span class="s">${esc(str)}</span>`) : num ? `<span class="n">${num}</span>` : esc(rest));
+    }
+    // comments: // in JavaScript, # elsewhere (only at the start of a line or after a space, so URLs and $VARS stay intact)
+    const comment = lang === 'Node.js' ? '\\/\\/[^\\n]*' : '(?:^|(?<=\\s))#[^\\n]*';
+    const re = new RegExp(`(${comment})|("(?:[^"\\\\\\n]|\\\\.)*"|'(?:[^'\\\\\\n]|\\\\.)*'|\`(?:[^\`\\\\]|\\\\.)*\`)|(\\b\\d+(?:\\.\\d+)?\\b)|(\\b[A-Za-z_]+\\b)`, 'gm');
+    let out = '', last = 0, m;
+    while ((m = re.exec(code))) {
+      out += esc(code.slice(last, m.index));
+      if (m[1] !== undefined) out += `<span class="c">${esc(m[1])}</span>`;
+      else if (m[2]) out += `<span class="s">${esc(m[2])}</span>`;
+      else if (m[3]) out += `<span class="n">${m[3]}</span>`;
+      else out += KW.test(m[4]) && m[4].match(KW)[0] === m[4] ? `<span class="k">${m[4]}</span>` : m[4];
+      last = re.lastIndex;
+      if (m[0] === '') re.lastIndex++;
+    }
+    return out + esc(code.slice(last));
+  }
+
+  // ---------- code blocks: language tabs remembered across the page ----------
+  const PREF = 'tokard.docs.lang';
+  let pref = 'Python'; try { pref = localStorage.getItem(PREF) || pref; } catch { /* no storage */ }
+  const blocks = [...document.querySelectorAll('.code[data-sample]')];
+  function render(el, lang) {
+    const sample = S[el.dataset.sample], langs = Object.keys(sample);
+    const cur = langs.includes(lang) ? lang : langs[0];
+    el.dataset.lang = cur;
+    el.querySelector('pre code').innerHTML = hl(sample[cur], cur);
+    el.querySelectorAll('[data-l]').forEach((b) => b.setAttribute('aria-selected', String(b.dataset.l === cur)));
+  }
+  blocks.forEach((el) => {
+    const langs = Object.keys(S[el.dataset.sample]);
+    el.innerHTML = `<div class="bar"><div class="langs" role="tablist">${langs.length > 1 ? langs.map((l) => `<button type="button" role="tab" data-l="${l}">${l}</button>`).join('') : `<span class="one">${langs[0]}</span>`}</div><button class="cp" type="button" aria-label="Copy"><svg viewBox="0 0 24 24" aria-hidden="true"><path data-icon="copy" d="M9 9h11v11H9zM15 5V4H4v11h1"/></svg></button></div><pre><code></code></pre>`;
+    el.querySelectorAll('[data-l]').forEach((b) => b.addEventListener('click', () => {
+      pref = b.dataset.l; try { localStorage.setItem(PREF, pref); } catch { /* no storage */ }
+      const y = el.getBoundingClientRect().top;
+      blocks.forEach((x) => render(x, pref));
+      scrollBy(0, el.getBoundingClientRect().top - y);   // keep the clicked block where it was
+    }));
+    el.querySelector('.cp').addEventListener('click', () => CA.copy(S[el.dataset.sample][el.dataset.lang], el.querySelector('.cp')));
+    render(el, pref);
+  });
+
+  // ---------- navigation built from the sections ----------
+  const secs = [...document.querySelectorAll('.doc section')];
+  const TITLES = new Map(secs.map((s) => [s, s.querySelector('h2').textContent.trim()]));
+  const title = (s) => TITLES.get(s);
+  const groups = [];
+  secs.forEach((s) => { const g = s.dataset.group; let x = groups.find((y) => y.g === g); if (!x) groups.push(x = { g, items: [] }); x.items.push(s); });
+  $('sideNav').innerHTML = groups.map((x) => `<h4>${x.g}</h4>${x.items.map((s) => `<a href="#${s.id}" data-id="${s.id}">${title(s)}</a>`).join('')}`).join('') + '<p class="none" hidden>Nothing found.</p>';
+  $('mtoc').innerHTML = groups.map((x) => `<optgroup label="${x.g}">${x.items.map((s) => `<option value="${s.id}">${title(s)}</option>`).join('')}</optgroup>`).join('');
+  $('mtoc').addEventListener('change', (e) => { location.hash = e.target.value; });
+  // anchors on headings
+  document.querySelectorAll('.doc section h2, .doc h3[id]').forEach((h) => { const id = h.id || h.parentElement.id; h.insertAdjacentHTML('beforeend', `<a class="anchor" href="#${id}" aria-label="Link to this section">#</a>`); });
+
+  // "on this page" for the section you're reading
+  function toc(sec) {
+    const subs = [...sec.querySelectorAll('h3[id]')];
+    $('toc').innerHTML = `<a href="#${sec.id}" class="on">${title(sec)}</a>` + subs.map((h) => `<a class="sub" href="#${h.id}">${h.firstChild.textContent}</a>`).join('');
+  }
+  let current = null;
+  function spy() {
+    const y = 120; let cur = secs[0];
+    for (const s of secs) if (s.getBoundingClientRect().top - y <= 0) cur = s;
+    if (cur === current) return;
+    current = cur;
+    document.querySelectorAll('#sideNav a').forEach((a) => a.classList.toggle('on', a.dataset.id === cur.id));
+    $('mtoc').value = cur.id; toc(cur);
+  }
+  addEventListener('scroll', spy, { passive: true }); spy();
+
+  // search: filter the sidebar by title and section text
+  $('find').addEventListener('input', (e) => {
+    const q = e.target.value.trim().toLowerCase(); let any = false;
+    document.querySelectorAll('#sideNav a').forEach((a) => { const s = $(a.dataset.id); const hit = !q || (a.textContent + ' ' + s.textContent).toLowerCase().includes(q); a.hidden = !hit; any = any || hit; });
+    document.querySelectorAll('#sideNav h4').forEach((h) => { let n = h.nextElementSibling, vis = false; while (n && n.tagName === 'A') { vis = vis || !n.hidden; n = n.nextElementSibling; } h.hidden = !vis; });
+    document.querySelector('#sideNav .none').hidden = any;
+  });
+  $('find').addEventListener('keydown', (e) => { if (e.key === 'Enter') { const a = [...document.querySelectorAll('#sideNav a')].find((x) => !x.hidden); if (a) location.hash = a.dataset.id; } });
+  addEventListener('keydown', (e) => { if (e.key === '/' && document.activeElement !== $('find') && !/input|textarea/i.test(document.activeElement.tagName)) { e.preventDefault(); $('find').focus(); } });
+})();
+</script>
+</body>
+</html>
